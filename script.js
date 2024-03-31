@@ -39,3 +39,17 @@ function efectoHabilidades(){
 window.onscroll = function(){
     efectoHabilidades();
 } 
+
+//Animación cuando acerques el mouse agregue otra foto con logo
+const imgHero = document.querySelector('.contenedor-img img');
+const imgHover = document.querySelector('.imagen-hover');
+
+imgHero.addEventListener('mouseover', () => {
+  imgHover.style.display = 'block';
+  imgHero.style.display = 'none';
+});
+
+imgHero.addEventListener('mouseout', () => {
+  imgHover.style.display = 'none';
+  imgHero.style.display = 'block';
+});
