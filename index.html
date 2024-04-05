@@ -67,8 +67,7 @@
                             25-04-2001
                         </li>
                         <li>
-                            <strong>Teléfono</strong>
-                            3116807501
+                            <!--<strong>Teléfono</strong>-->
                         </li>
                         <li>
                             <strong>Email</strong>
@@ -201,8 +200,8 @@
                         <h3>Snake Game</h3>
                         <p>Python</p>
                         <a href="https://github.com/Ascencioncar/serpiente.py" target="_blank"><i class="fa-brands fa-github"></i></a>
-                        
                     </div>
+                    
                 </div>
                 <div class="proyecto">
                     <img src="img/p2.jpg" alt="">
@@ -249,41 +248,43 @@
             <h2>CONTACTO</h2>
             <div class="fila">
                 <!-- Formulario -->
+                <form action="enviar.php" method="post" class="formulario">
                 <div class="col">
-                    <input type="text" placeholder="Tú Nombre">
-                    <input type="text" placeholder="Número telefónico">
-                    <input type="text" placeholder="Dirección de correo">
-                    <input type="text" placeholder="Tema">
-                    <textarea name="" id="" cols="30" rows="10" placeholder="Mensaje"></textarea>
+                    <input type="text" id="nombre" placeholder="Tu nombre">
+                    <input type="text" id="telefono" placeholder="Número telefónico">
+                    <input type="mail" id="correo" placeholder="Dirección de correo">
+                    <input type="text" id="tema" placeholder="Tema">
+                    <textarea name="text" id="mensaje" cols="30" rows="10" placeholder="Mensaje"></textarea>
                     <button>
                         Enviar Mensaje<i class="fa-solid fa-paper-plane"></i>
                         <span class="overlay"></span>
                     </button>
                 </div>
-                <!-- Mapa -->
-                <div class="col">
-                    <img src="img/ubicacion.png" alt="">
-                    <div class="info">
-                        <ul>
-                            <li>
-                                <i class="fa-solid fa-location-dot"></i>
-                                Bello Antioquia
-                            </li>
-                            <li>
-                                <i class="fa-solid fa-mobile-screen"></i>
-                                Llamame al 3116807501 
-                            </li>
-                            <li>
-                                <i class="fa-solid fa-envelope"></i>
-                                Email: Carlosrp1918@gmail.com
-                            </li>
-                        </ul>
-                    </div>
+                </form>
+            </div>
+            <!-- Mapa -->
+            <div class="col">
+                <img src="img/ubicacion.png" alt="">
+                <div class="info">
+                    <ul>
+                        <li>
+                            <i class="fa-solid fa-location-dot"></i>
+                            Bello Antioquia
+                        </li>
+                        <li>
+                            <!--<i class="fa-solid fa-mobile-screen"></i>-->
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-envelope"></i>
+                            Email: Carlosrp1918@gmail.com
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
     </section>
-
+    <section>
+     
     <!-- footer -->
     <footer>
         <a href="#inicio" class="arriba">
@@ -299,3 +300,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+
