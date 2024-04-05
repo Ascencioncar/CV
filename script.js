@@ -40,16 +40,23 @@ window.onscroll = function(){
     efectoHabilidades();
 } 
 
-//Animación cuando acerques el mouse agregue otra foto con logo
-const imgHero = document.querySelector('.contenedor-img img');
-const imgHover = document.querySelector('.imagen-hover');
+const btn = document.getElementById('button');
 
-imgHero.addEventListener('mouseover', () => {
-  imgHover.style.display = 'block';
-  imgHero.style.display = 'none';
-});
+document.getElementById('form')
+ .addEventListener('submit', function(event) {
+   event.preventDefault();
 
-imgHero.addEventListener('mouseout', () => {
-  imgHover.style.display = 'none';
-  imgHero.style.display = 'block';
+   btn.value = 'Sending...';
+
+   const serviceID = 'default_service';
+   const templateID = 'template_q2g1hpp';
+
+   emailjs.sendForm(serviceID, templateID, this)
+    .then(() => {
+      btn.value = 'Send Email';
+      alert('Formulario enviado');
+    }, (err) => {
+      btn.value = 'Send Email';
+      alert(JSON.stringify(err));
+    });
 });
