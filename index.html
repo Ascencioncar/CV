@@ -8,6 +8,7 @@
     <title>Hoja de vida</title>
     <link rel="stylesheet" href="estilo.css">
     <link rel="website icon" type="png" href="img/logo.png">
+    
 </head>
 <body>
     <!-- MENU ENCABEZADO -->
@@ -40,10 +41,9 @@
                
             </div>
             <h1>Carlos Andres Cuartas</h1>
-            <h2>Futuro programador junior</h2>
+            <h2>programador junior</h2>
             <div class="redes">
                 <a href="https://www.linkedin.com/in/carlos-andres-cuartas-villa-08091a253" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
-                <a href="https://wa.link/mqwsi9" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
                 <a href="https://github.com/Ascencioncar" target="_blank"><i class="fa-brands fa-github"></i></a>
             </div>
         </div>
@@ -248,14 +248,16 @@
             <h2>CONTACTO</h2>
             <div class="fila">
                 <!-- Formulario -->
-                <form action="enviar.php" method="post" class="formulario">
+                <form id="form">
                 <div class="col">
-                    <input type="text" id="nombre" placeholder="Tu nombre">
-                    <input type="text" id="telefono" placeholder="Número telefónico">
-                    <input type="mail" id="correo" placeholder="Dirección de correo">
-                    <input type="text" id="tema" placeholder="Tema">
-                    <textarea name="text" id="mensaje" cols="30" rows="10" placeholder="Mensaje"></textarea>
-                    <button>
+                    <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
+                    <input type="text" id="telefono" name="telefono" placeholder="Número telefónico" required>
+                    <input type="mail" id="correo" name="correo" placeholder="Dirección de correo" required>
+                    <input type="text" id="tema" name="tema" placeholder="Tema" required>
+                    <textarea name="mensaje" id="mensaje" cols="30" rows="10" placeholder="Mensaje" required ></textarea>
+                    
+                    <!--<input type="submit" id="button" value="Send Email" >-->
+                    <button id="button" type="submit">
                         Enviar Mensaje<i class="fa-solid fa-paper-plane"></i>
                         <span class="overlay"></span>
                     </button>
@@ -296,8 +298,9 @@
             <a href="https://github.com/Ascencioncar" target="_blank"><i class="fa-brands fa-github"></i></a>
         </div>
     </footer>
-
+    
     <script src="script.js"></script>
+    <script type="text/javascript"src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">emailjs.init('_eEorjFudtTfPfQNH')</script>
 </body>
 </html>
-
