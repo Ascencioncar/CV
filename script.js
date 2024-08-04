@@ -41,3 +41,16 @@ document.getElementById('form')
       alert(JSON.stringify(err));
     });
 });
+
+
+function DarEdad() {
+    var fechaInicio = new Date('2001-04-25').getTime();
+    const fecha = new Date();
+    var edad = (fecha - fechaInicio) / (1000 * 60 * 60 * 24 * 365);
+    var edadform = Math.trunc(edad);
+    let edadElement = document.getElementById('edad');
+  
+    edadElement.textContent = edadform;
+}
+
+DarEdad();
