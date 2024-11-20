@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Luxury Downtown Apartment</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -93,6 +94,16 @@
         .cta-button:hover {
             background-color: #2c5282;
         }
+
+        .audio-icon {
+            cursor: pointer;
+            margin-left: 10px;
+            color: #1a365d;
+        }
+
+        .audio-icon:hover {
+            color: #2c5282;
+        }
     </style>
 </head>
 <body>
@@ -120,12 +131,15 @@
 
         <p data-en="Welcome to this stunning 2-bedroom apartment located in the vibrant downtown area. This modern living space combines comfort with style, offering an unmatched urban living experience." 
            data-es="Bienvenido a este impresionante apartamento de 2 habitaciones ubicado en la vibrante zona del centro. Este espacio moderno combina comodidad con estilo, ofreciendo una experiencia de vida urbana inigualable.">
-            Welcome to this stunning 2-bedroom apartment located in the vibrant downtown area. This modern living space combines comfort with style, offering an unmatched urban living experience.
+            Welcome to this stunning 2-bedroom apartment located in the vibrant downtown area. This modern living space combines comfort with style, offering an unmatched urban living experience. 
+            <i class="fas fa-volume-up audio-icon" onclick="toggleAudio('description')"></i>
         </p>
 
         <div class="features">
             <div class="feature-card">
-                <h3 data-en="Property Details" data-es="Detalles de la Propiedad">Property Details</h3>
+                <h3 data-en="Property Details" data-es="Detalles de la Propiedad">Property Details 
+                    <i class="fas fa-volume-up audio-icon" onclick="toggleAudio('details')"></i>
+                </h3>
                 <ul>
                     <li data-en="2 Bedrooms" data-es="2 Habitaciones">2 Bedrooms</li>
                     <li data-en="2 Bathrooms" data-es="2 Baños">2 Bathrooms</li>
@@ -135,7 +149,9 @@
             </div>
 
             <div class="feature-card">
-                <h3 data-en="Amenities" data-es="Comodidades">Amenities</h3>
+                <h3 data-en="Amenities" data-es="Comodidades">Amenities 
+                    <i class="fas fa-volume-up audio-icon" onclick="toggleAudio('amenities')"></i>
+                </h3>
                 <ul>
                     <li data-en="Modern Kitchen" data-es="Cocina Moderna">Modern Kitchen</li>
                     <li data-en="Central Air Conditioning" data-es="Aire Acondicionado Central">Central Air Conditioning</li>
@@ -145,7 +161,9 @@
             </div>
 
             <div class="feature-card">
-                <h3 data-en="Building Features" data-es="Características del Edificio">Building Features</h3>
+                <h3 data-en="Building Features" data-es="Características del Edificio">Building Features 
+                    <i class="fas fa-volume-up audio-icon" onclick="toggleAudio('building')"></i>
+                </h3>
                 <ul>
                     <li data-en="24/7 Security" data-es="Seguridad 24/7">24/7 Security</li>
                     <li data-en="Fitness Center" data-es="Gimnasio">Fitness Center</li>
@@ -160,10 +178,13 @@
         </div>
 
         <div style="margin-top: 2rem;">
-            <h3 data-en="Location" data-es="Ubicación">Location</h3>
+            <h3 data-en="Location" data-es="Ubicación">Location 
+                <i class="fas fa-volume-up audio-icon" onclick="toggleAudio('location')"></i>
+            </h3>
             <p data-en="Located in the heart of downtown, just steps away from restaurants, shops, and public transportation. The building offers easy access to major highways and is within walking distance to parks and entertainment venues." 
                data-es="Ubicado en el corazón del centro, a pocos pasos de restaurantes, tiendas y transporte público. El edificio ofrece fácil acceso a las principales carreteras y está a poca distancia a pie de parques y lugares de entretenimiento.">
                 Located in the heart of downtown, just steps away from restaurants, shops, and public transportation. The building offers easy access to major highways and is within walking distance to parks and entertainment venues.
+                <i class="fas fa-volume-up audio-icon" onclick="toggleAudio('location')"></i>
             </p>
         </div>
 
@@ -180,7 +201,62 @@
         </div>
     </div>
 
+    <!-- Audio Elements -->
+    <audio id="audio-description-en" src=""></audio>
+    <audio id="audio-description-es" src=""></audio>
+    <audio id="audio-details-en" src=""></audio>
+    <audio id="audio-details-es" src=""></audio>
+    <audio id="audio-amenities-en" src=""></audio>
+    <audio id="audio-amenities-es" src=""></audio>
+    <audio id="audio-building-en" src=""></audio>
+    <audio id="audio-building-es" src=""></audio>
+    <audio id="audio-location-en" src=""></audio>
+    <audio id="audio-location-es" src=""></audio>
+
     <script>
+        // Audio URLs would be replaced with actual audio file paths
+        const audioSources = {
+            en: {
+                description: 'path/to/description-en.mp3',
+                details: 'path/to/details-en.mp3',
+                amenities: 'path/to/amenities-en.mp3',
+                building: 'path/to/building-en.mp3',
+                location: 'path/to/location-en.mp3'
+            },
+            es: {
+                description: 'path/to/description-es.mp3',
+                details: 'path/to/details-es.mp3',
+                amenities: 'path/to/amenities-es.mp3',
+                building: 'path/to/building-es.mp3',
+                location: 'path/to/location-es.mp3'
+            }
+        };
+
+        let currentAudio = null;
+
+        function toggleAudio(section) {
+            const language = document.getElementById('languageSelect').value;
+            const audioElement = document.getElementById(`audio-${section}-${language}`);
+            
+            // Stop any currently playing audio
+            if (currentAudio && currentAudio !== audioElement) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+
+            // Set audio source and play/pause
+            audioElement.src = audioSources[language][section];
+            
+            if (audioElement.paused) {
+                audioElement.play();
+                currentAudio = audioElement;
+            } else {
+                audioElement.pause();
+                audioElement.currentTime = 0;
+                currentAudio = null;
+            }
+        }
+
         function changeLanguage() {
             const language = document.getElementById('languageSelect').value;
             const elements = document.querySelectorAll('[data-en]');
@@ -191,6 +267,13 @@
             
             // Update the HTML lang attribute
             document.documentElement.lang = language;
+
+            // Stop any playing audio when changing language
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                currentAudio = null;
+            }
         }
     </script>
 </body>
