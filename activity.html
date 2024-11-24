@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luxury Downtown Apartment</title>
+    <title>My presentation Apartment</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body {
@@ -182,9 +182,9 @@
             <h3 data-en="Location" data-es="Ubicación">Location 
                 <i class="fas fa-volume-up audio-icon" onclick="toggleAudio('location')"></i>
             </h3>
-            <p data-en="Located in the heart of downtown, just steps away from restaurants, shops, and public transportation. The building offers easy access to major highways and is within walking distance to parks and entertainment venues." 
-               data-es="Ubicado en el corazón del centro, a pocos pasos de restaurantes, tiendas y transporte público. El edificio ofrece fácil acceso a las principales carreteras y está a poca distancia a pie de parques y lugares de entretenimiento.">
-                Located in the heart of downtown, just steps away from restaurants, shops, and public transportation. The building offers easy access to major highways and is within walking distance to parks and entertainment venues.
+            <p data-en="Located near the Niquia station and the Marco Fidel Suarez Hospital Center and Clinica del Norte." 
+               data-es="Ubicado cerca de la estación niquia y el centro hospitalario del marco fidel suarez y clinica del norte.">
+               Located near the Niquia station and the Marco Fidel Suarez Hospital Center and Clinica del Norte.
                 <i class="fas fa-volume-up audio-icon" onclick="toggleAudio('locationdes')"></i>
             </p>
         </div>
@@ -212,25 +212,27 @@
     <audio id="audio-building-en" src=""></audio>
     <audio id="audio-building-es" src=""></audio>
     <audio id="audio-location-en" src=""></audio>
+    <audio id="audio-locationdes-en" src=""></audio>
     <audio id="audio-location-es" src=""></audio>
 
     <script>
         // Audio URLs would be replaced with actual audio file paths
         const audioSources = {
             en: {
-                description: 'path/to/description-en.mp3',
+                description: 'Assets/audio/detalles.mp3',
                 details: 'Assets/audio/propiedaddetalles.mp3',
                 amenities: 'Assets/audio/comodidades.mp3',
                 building: 'Assets/audio/caracteristicasEdificio.mp3',
                 location: 'Assets/audio/location.mp3',
-                locationdes: ''
+                locationdes: 'Assets/audio/descripcionLocation.mp3'
             },
             es: {
                 description: 'path/to/description-es.mp3',
                 details: 'path/to/details-es.mp3',
                 amenities: 'path/to/amenities-es.mp3',
                 building: 'path/to/building-es.mp3',
-                location: 'path/to/location-es.mp3'
+                location: 'path/to/location-es.mp3',
+                locationdes: 'Assets/audio/location.mp3'
             }
         };
 
