@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>¿Quieres ser mi San Valentín?</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #ff6b6b, #ffc0cb);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            cursor: pointer;
+        }
+
+        .message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 2.5em;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            background-color: rgba(255, 107, 107, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            animation: pulse 2s infinite;
+        }
+
+        .heart {
+            position: fixed;
+            font-size: 20px;
+            user-select: none;
+            cursor: default;
+        }
+
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .initial-message {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 1.2em;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 20px;
+            animation: fadeOut 1s ease-in 3s forwards;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="message">¿Quieres ser mi San Valentín?</div>
+    <div class="initial-message">Haz clic en cualquier lugar para comenzar ❤️</div>
+    
+    <audio id="bgMusic" loop>
+        <source src="Assets/audio/DoIWannaKnow.mp3" type="audio/mp3">
+    </audio>
+
+    <script>
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.top = '-20px';
+            heart.style.transform = `scale(${Math.random() * 1 + 0.5})`;
+            document.body.appendChild(heart);
+
+            const animation = heart.animate([
+                { transform: `translate(0, 0) rotate(0deg) scale(${Math.random() * 1 + 0.5})` },
+                { transform: `translate(${Math.random() * 100 - 50}px, 100vh) rotate(${Math.random() * 360}deg) scale(${Math.random() * 1 + 0.5})` }
+            ], {
+                duration: Math.random() * 3000 + 3000,
+                easing: 'linear'
+            });
+
+            animation.onfinish = () => heart.remove();
+        }
+
+        setInterval(createHeart, 300);
+
+        // Reproducir música con el primer clic
+        let musicStarted = false;
+        document.addEventListener('click', () => {
+            if (!musicStarted) {
+                const audio = document.getElementById('bgMusic');
+                audio.play()
+                    .then(() => {
+                        musicStarted = true;
+                        const message = document.querySelector('.initial-message');
+                        if (message) {
+                            message.style.display = 'none';
+                        }
+                    })
+                    .catch(console.error);
+            }
+        });
+    </script>
+</body>
+</html>
