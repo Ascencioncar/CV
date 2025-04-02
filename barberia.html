@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reserva tu Turno - Barbería</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .logo {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .step {
+            margin-bottom: 25px;
+        }
+        .step-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background-color: #333;
+            color: white;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .services {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .service-option {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .service-option:hover {
+            border-color: #333;
+        }
+        .service-option.selected {
+            background-color: #333;
+            color: white;
+            border-color: #333;
+        }
+        .service-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .service-price {
+            color: #666;
+            font-size: 14px;
+        }
+        .service-option.selected .service-price {
+            color: #f5f5f5;
+        }
+        .calendar {
+            margin-bottom: 20px;
+        }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .month-nav {
+            cursor: pointer;
+            padding: 5px 10px;
+            background-color: #eee;
+            border-radius: 4px;
+        }
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        .day-name {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        .day {
+            padding: 10px 0;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .day:hover {
+            background-color: #f0f0f0;
+        }
+        .day.selected {
+            background-color: #333;
+            color: white;
+        }
+        .day.disabled {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .time-slot {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .time-slot:hover {
+            background-color: #f0f0f0;
+        }
+        .time-slot.selected {
+            background-color: #333;
+            color: white;
+        }
+        .time-slot.disabled {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+        .summary {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .summary-label {
+            font-weight: bold;
+        }
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #555;
+        }
+        .hidden {
+            display: none;
+        }
+        .step-container {
+            overflow: hidden;
+            transition: height 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">✂️</div>
+            <h1>Barbería El Estilo</h1>
+            <p>Reserva tu turno en simples pasos</p>
+        </header>
+
+        <div class="step" id="step1">
+            <div class="step-title">
+                <div class="step-number">1</div>
+                Selecciona un servicio
+            </div>
+            <div class="services">
+                <div class="service-option" onclick="selectService('corte', 'Corte de Cabello', '$15')">
+                    <div class="service-name">Corte de Cabello</div>
+                    <div class="service-price">$15 - 25min</div>
+                </div>
+                <div class="service-option" onclick="selectService('barba', 'Arreglo de Barba', '$10')">
+                    <div class="service-name">Arreglo de Barba</div>
+                    <div class="service-price">$10 - 25min</div>
+                </div>
+                <div class="service-option" onclick="selectService('combo', 'Corte + Barba', '$22')">
+                    <div class="service-name">Corte + Barba</div>
+                    <div class="service-price">$22 - 50min</div>
+                </div>
+                <div class="service-option" onclick="selectService('deluxe', 'Servicio Deluxe', '$30')">
+                    <div class="service-name">Servicio Deluxe</div>
+                    <div class="service-price">$30 - 50min</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step hidden" id="step2">
+            <div class="step-title">
+                <div class="step-number">2</div>
+                Selecciona una fecha
+            </div>
+            <div class="calendar">
+                <div class="calendar-header">
+                    <div class="month-nav" onclick="changeMonth(-1)">&#9664; Anterior</div>
+                    <div class="current-month" id="currentMonth">Abril 2025</div>
+                    <div class="month-nav" onclick="changeMonth(1)">Siguiente &#9654;</div>
+                </div>
+                <div class="days-grid">
+                    <div class="day-name">Do</div>
+                    <div class="day-name">Lu</div>
+                    <div class="day-name">Ma</div>
+                    <div class="day-name">Mi</div>
+                    <div class="day-name">Ju</div>
+                    <div class="day-name">Vi</div>
+                    <div class="day-name">Sa</div>
+                </div>
+                <div class="days-grid" id="calendar-days">
+                    <!-- Days will be generated here -->
+                </div>
+            </div>
+            <button class="btn" onclick="goBack(1)">Volver</button>
+        </div>
+
+        <div class="step hidden" id="step3">
+            <div class="step-title">
+                <div class="step-number">3</div>
+                Selecciona un horario
+            </div>
+            <div class="time-slots" id="time-slots">
+                <!-- Time slots will be generated here -->
+            </div>
+            <button class="btn" onclick="goBack(2)">Volver</button>
+        </div>
+
+        <div class="step hidden" id="step4">
+            <div class="step-title">
+                <div class="step-number">4</div>
+                Confirma tu reserva
+            </div>
+            <div class="summary">
+                <div class="summary-row">
+                    <span class="summary-label">Servicio:</span>
+                    <span id="summary-service">-</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Precio:</span>
+                    <span id="summary-price">-</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Fecha:</span>
+                    <span id="summary-date">-</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Hora:</span>
+                    <span id="summary-time">-</span>
+                </div>
+            </div>
+            <button class="btn" onclick="confirmBooking()">Confirmar Reserva</button>
+            <button class="btn" style="background-color: #666;" onclick="goBack(3)">Volver</button>
+        </div>
+
+        <div class="step hidden" id="step5">
+            <div style="text-align: center; padding: 40px 0;">
+                <div style="font-size: 50px; margin-bottom: 20px;">✅</div>
+                <h2>¡Reserva Confirmada!</h2>
+                <p>Te esperamos el <span id="confirmed-date">-</span> a las <span id="confirmed-time">-</span></p>
+                <p>Has reservado: <span id="confirmed-service">-</span></p>
+                <button class="btn" onclick="startOver()">Hacer otra reserva</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Globals
+        let currentStep = 1;
+        let selectedService = '';
+        let selectedServiceName = '';
+        let selectedServicePrice = '';
+        let selectedDate = '';
+        let selectedTime = '';
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+
+        // Initialize calendar
+        function initCalendar() {
+            const today = new Date();
+            currentMonth = today.getMonth();
+            currentYear = today.getFullYear();
+            renderCalendar();
+        }
+
+        // Render calendar days
+        function renderCalendar() {
+            const daysContainer = document.getElementById('calendar-days');
+            daysContainer.innerHTML = '';
+            
+            const firstDay = new Date(currentYear, currentMonth, 1);
+            const lastDay = new Date(currentYear, currentMonth + 1, 0);
+            const prevMonthLastDay = new Date(currentYear, currentMonth, 0);
+            
+            document.getElementById('currentMonth').textContent = new Date(currentYear, currentMonth).toLocaleDateString('es', { month: 'long', year: 'numeric' });
+            
+            // Add empty cells for days before the first day of the month
+            for (let i = 0; i < firstDay.getDay(); i++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'day disabled';
+                dayElement.textContent = prevMonthLastDay.getDate() - (firstDay.getDay() - i - 1);
+                daysContainer.appendChild(dayElement);
+            }
+            
+            // Add days of the current month
+            const today = new Date();
+            for (let i = 1; i <= lastDay.getDate(); i++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'day';
+                dayElement.textContent = i;
+                
+                // Disable past dates
+                const thisDate = new Date(currentYear, currentMonth, i);
+                if (thisDate < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
+                    dayElement.className = 'day disabled';
+                } else {
+                    dayElement.addEventListener('click', () => selectDate(i));
+                }
+                
+                daysContainer.appendChild(dayElement);
+            }
+            
+            // Add empty cells for days after the last day of the month
+            const remainingCells = 42 - (firstDay.getDay() + lastDay.getDate());
+            for (let i = 1; i <= remainingCells; i++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'day disabled';
+                dayElement.textContent = i;
+                daysContainer.appendChild(dayElement);
+            }
+        }
+
+        // Change month
+        function changeMonth(direction) {
+            currentMonth += direction;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            } else if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar();
+        }
+
+        // Select service
+        function selectService(service, name, price) {
+            // Clear previous selection
+            document.querySelectorAll('.service-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Mark as selected
+            event.currentTarget.classList.add('selected');
+            
+            selectedService = service;
+            selectedServiceName = name;
+            selectedServicePrice = price;
+            
+            // Move to next step
+            setTimeout(() => {
+                nextStep();
+            }, 300);
+        }
+
+        // Select date
+        function selectDate(day) {
+            // Clear previous selection
+            document.querySelectorAll('.day').forEach(dayElem => {
+                if (!dayElem.classList.contains('disabled')) {
+                    dayElem.classList.remove('selected');
+                }
+            });
+            
+            // Mark as selected
+            event.currentTarget.classList.add('selected');
+            
+            // Format the date
+            const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            selectedDate = `${day} de ${monthNames[currentMonth]} de ${currentYear}`;
+            
+            // Generate time slots
+            generateTimeSlots();
+            
+            // Move to next step
+            setTimeout(() => {
+                nextStep();
+            }, 300);
+        }
+
+        // Generate time slots
+        function generateTimeSlots() {
+            const timeSlotsContainer = document.getElementById('time-slots');
+            timeSlotsContainer.innerHTML = '';
+            
+            // Starting from 8:00 AM with 25 minute intervals
+            let hour = 8;
+            let minute = 0;
+            
+            // Generate time slots until 8:00 PM
+            while (hour < 20) {
+                const timeSlot = document.createElement('div');
+                timeSlot.className = 'time-slot';
+                
+                // Format the time
+                const formattedHour = hour % 12 === 0 ? 12 : hour % 12;
+                const amPm = hour < 12 ? 'AM' : 'PM';
+                const formattedMinute = minute === 0 ? '00' : minute;
+                const timeText = `${formattedHour}:${formattedMinute} ${amPm}`;
+                
+                timeSlot.textContent = timeText;
+                
+                // Add event listener
+                timeSlot.addEventListener('click', () => selectTime(timeText));
+                
+                timeSlotsContainer.appendChild(timeSlot);
+                
+                // Increment by 25 minutes
+                minute += 25;
+                if (minute >= 60) {
+                    hour++;
+                    minute = minute % 60;
+                }
+            }
+        }
+
+        // Select time
+        function selectTime(time) {
+            // Clear previous selection
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                slot.classList.remove('selected');
+            });
+            
+            // Mark as selected
+            event.currentTarget.classList.add('selected');
+            
+            selectedTime = time;
+            
+            // Update summary
+            document.getElementById('summary-service').textContent = selectedServiceName;
+            document.getElementById('summary-price').textContent = selectedServicePrice;
+            document.getElementById('summary-date').textContent = selectedDate;
+            document.getElementById('summary-time').textContent = selectedTime;
+            
+            // Move to next step
+            setTimeout(() => {
+                nextStep();
+            }, 300);
+        }
+
+        // Next step
+        function nextStep() {
+            document.getElementById(`step${currentStep}`).classList.add('hidden');
+            currentStep++;
+            document.getElementById(`step${currentStep}`).classList.remove('hidden');
+        }
+
+        // Go back
+        function goBack(step) {
+            document.getElementById(`step${currentStep}`).classList.add('hidden');
+            currentStep = step;
+            document.getElementById(`step${currentStep}`).classList.remove('hidden');
+        }
+
+        // Confirm booking
+        function confirmBooking() {
+            // In a real app, you would send this data to the server
+            document.getElementById('confirmed-date').textContent = selectedDate;
+            document.getElementById('confirmed-time').textContent = selectedTime;
+            document.getElementById('confirmed-service').textContent = selectedServiceName;
+            
+            document.getElementById(`step${currentStep}`).classList.add('hidden');
+            currentStep++;
+            document.getElementById(`step${currentStep}`).classList.remove('hidden');
+        }
+
+        // Start over
+        function startOver() {
+            document.getElementById(`step${currentStep}`).classList.add('hidden');
+            currentStep = 1;
+            document.getElementById(`step${currentStep}`).classList.remove('hidden');
+            
+            // Clear selections
+            document.querySelectorAll('.service-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            selectedService = '';
+            selectedServiceName = '';
+            selectedServicePrice = '';
+            selectedDate = '';
+            selectedTime = '';
+            
+            initCalendar();
+        }
+
+        // Initialize
+        window.onload = function() {
+            initCalendar();
+        };
+    </script>
+</body>
+</html>
