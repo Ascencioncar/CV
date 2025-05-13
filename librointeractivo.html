@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cuento Interactivo</title>
-    <style>
+     <style>
         body {
             margin: 0;
             padding: 0;
@@ -17,10 +17,13 @@
         }
 
         .book {
-            width: 800px;
-            height: 500px;
+            width: 95%; /* Modificado para ser responsive */
+            max-width: 800px; /* Añadido max-width */
+            height: auto; /* Altura automática para mantener la proporción */
+            aspect-ratio: 8 / 5;  /* Nueva relación de aspecto */
             position: relative;
             perspective: 1500px;
+            margin: 20px 0; /* Añadido margen superior e inferior */
         }
 
         .book-cover {
@@ -30,8 +33,8 @@
             transform-style: preserve-3d;
             transition: transform 0.7s ease-in-out;
             transform-origin: center left;
-            cursor: pointer; /* Added cursor for interaction */
-            z-index: 10; /* Ensure cover is on top initially */
+            cursor: pointer;
+            z-index: 10;
         }
 
         .page {
@@ -53,8 +56,12 @@
             height: 100%;
             backface-visibility: hidden;
             box-sizing: border-box;
-            padding: 30px;
+            padding: 10%; /* Padding en porcentaje para mantener la proporción */
             border-radius: 0 5px 5px 0;
+            display: flex; /* Añadido para centrar contenido */
+            flex-direction: column;
+            justify-content: center; /* Centrar verticalmente */
+            align-items: center; /* Centrar horizontalmente */
         }
 
         .back {
@@ -64,30 +71,31 @@
         .page-content {
             max-width: 90%;
             margin: 0 auto;
-            line-height: 1.8;
-            font-size: 18px;
+            line-height: 1.6; /* Reducido el interlineado para pantallas más pequeñas */
+            font-size: 16px; /* Tamaño de fuente base más pequeño */
         }
 
         .page-number {
             position: absolute;
-            bottom: 20px;
+            bottom: 10px; /* Ajustado la posición del número de página */
             font-style: italic;
             color: #777;
+            font-size: 0.8em; /* Tamaño de fuente relativo */
         }
 
         .front .page-number {
-            right: 30px;
+            right: 10px; /* Ajustado la posición del número de página */
         }
 
         .back .page-number {
-            left: 30px;
+            left: 10px; /* Ajustado la posición del número de página */
         }
 
         .page-edge {
             position: absolute;
             top: 0;
             right: 0;
-            width: 3px;
+            width: 2px; /* Grosor de borde más fino */
             height: 100%;
             background: linear-gradient(to right, rgba(0,0,0,0.05), rgba(0,0,0,0.1));
             transform: rotateY(90deg);
@@ -101,35 +109,37 @@
         h1 {
             color: #4a4236;
             text-align: center;
-            font-size: 28px;
-            margin-bottom: 40px;
+            font-size: 1.8em; /* Tamaño de fuente relativo */
+            margin-bottom: 0.5em; /* Margen inferior relativo */
         }
 
         .book-title {
             text-align: center;
-            font-size: 32px;
-            margin-top: 120px;
-            color: white; /* Changed cover title color */
+            font-size: 2em; /* Tamaño de fuente relativo */
+            margin-top: 25%; /* Margen superior en porcentaje */
+            color: white;
         }
 
         .book-author {
             text-align: center;
             font-style: italic;
-            font-size: 20px;
-            margin-top: 20px;
-            color: white; /* Changed cover author color */
+            font-size: 1.2em; /* Tamaño de fuente relativo */
+            margin-top: 0.5em; /* Margen superior relativo */
+            color: white;
         }
 
         .navigation {
             position: absolute;
-            bottom: -60px;
+            bottom: -50px; /* Ajustado la posición de los botones de navegación */
             width: 100%;
             display: flex;
             justify-content: space-between;
+            padding: 0 10px; /* Añadido padding horizontal */
+            box-sizing: border-box;
         }
 
         button {
-            padding: 10px 20px;
+            padding: 8px 15px;
             background-color: #8b7d6b;
             color: white;
             border: none;
@@ -137,6 +147,7 @@
             cursor: pointer;
             font-family: 'Georgia', serif;
             transition: background-color 0.3s;
+            font-size: 0.9em; /* Tamaño de fuente relativo */
         }
 
         button:hover {
@@ -174,31 +185,86 @@
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 20px;
+            font-size: 1.2em; /* Tamaño de fuente relativo */
             color: #8b7d6b;
             padding: 0;
-            margin-top: 15px;
+            margin-top: 0.5em; /* Margen superior relativo */
         }
 
         .audio-button i {
-            pointer-events: none; /* Ensure icon doesn't interfere with button clicks */
+            pointer-events: none;
         }
 
-        @media (max-width: 850px) {
+        /* Adaptaciones para pantallas más pequeñas */
+        @media (max-width: 768px) {
             .book {
-                width: 90%;
-                height: 400px;
+                width: 98%;
+                margin: 10px 0;
             }
             .page-content {
-                font-size: 16px;
-                line-height: 1.6;
+                font-size: 0.9em;
+                line-height: 1.4;
+            }
+            h1 {
+                font-size: 1.5em;
+                margin-bottom: 0.5em;
+            }
+            .book-title {
+                font-size: 1.8em;
+                margin-top: 20%;
+            }
+            .book-author {
+                font-size: 1em;
+                margin-top: 0.5em;
             }
             .navigation {
-                bottom: -50px;
+                bottom: -40px;
             }
             button {
-                padding: 8px 15px;
-                font-size: 14px;
+                padding: 6px 10px;
+                font-size: 0.8em;
+            }
+            .cover-image {
+                padding: 10%;
+            }
+        }
+
+        /* Ajustes para móviles */
+        @media (max-width: 480px) {
+            .book {
+                aspect-ratio: 1 / 1.2;
+            }
+            .page {
+                padding: 8%;
+            }
+            .page-content {
+                font-size: 0.85em;
+                line-height: 1.3;
+            }
+            h1 {
+                font-size: 1.2em;
+                margin-bottom: 0.5em;
+            }
+            .book-title {
+                font-size: 1.6em;
+                margin-top: 15%;
+            }
+            .book-author {
+                font-size: 0.9em;
+                margin-top: 0.5em;
+            }
+            .navigation {
+                bottom: -30px;
+                flex-direction: column;
+                align-items: center;
+            }
+            button {
+                padding: 5px 8px;
+                font-size: 0.7em;
+                margin: 5px 0;
+            }
+            .cover-image {
+                padding: 15%;
             }
         }
     </style>
