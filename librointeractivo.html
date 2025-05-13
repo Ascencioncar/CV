@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuento Interactivo</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f9e8f0;
+            font-family: 'Georgia', serif;
+        }
+
+        .book {
+            width: 800px;
+            height: 500px;
+            position: relative;
+            perspective: 1500px;
+        }
+
+        .book-cover {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.7s ease-in-out;
+            transform-origin: center left;
+            cursor: pointer; /* Added cursor for interaction */
+            z-index: 10; /* Ensure cover is on top initially */
+        }
+
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.7s ease-in-out;
+            transform-origin: center left;
+            cursor: pointer;
+            background-color: #fff;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .front, .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            box-sizing: border-box;
+            padding: 30px;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .back {
+            transform: rotateY(180deg);
+        }
+
+        .page-content {
+            max-width: 90%;
+            margin: 0 auto;
+            line-height: 1.8;
+            font-size: 18px;
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 20px;
+            font-style: italic;
+            color: #777;
+        }
+
+        .front .page-number {
+            right: 30px;
+        }
+
+        .back .page-number {
+            left: 30px;
+        }
+
+        .page-edge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(to right, rgba(0,0,0,0.05), rgba(0,0,0,0.1));
+            transform: rotateY(90deg);
+            transform-origin: right;
+        }
+
+        .page-turned {
+            transform: rotateY(-180deg);
+        }
+
+        h1 {
+            color: #4a4236;
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 40px;
+        }
+
+        .book-title {
+            text-align: center;
+            font-size: 32px;
+            margin-top: 120px;
+            color: white; /* Changed cover title color */
+        }
+
+        .book-author {
+            text-align: center;
+            font-style: italic;
+            font-size: 20px;
+            margin-top: 20px;
+            color: white; /* Changed cover author color */
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: -60px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #8b7d6b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Georgia', serif;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #6b5b4b;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .cover-image {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #8b7d6b;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            border-radius: 5px 0 0 5px;
+        }
+
+        .paper-texture {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.1'/%3E%3C/svg%3E");
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .audio-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: #8b7d6b;
+            padding: 0;
+            margin-top: 15px;
+        }
+
+        .audio-button i {
+            pointer-events: none; /* Ensure icon doesn't interfere with button clicks */
+        }
+
+        @media (max-width: 850px) {
+            .book {
+                width: 90%;
+                height: 400px;
+            }
+            .page-content {
+                font-size: 16px;
+                line-height: 1.6;
+            }
+            .navigation {
+                bottom: -50px;
+            }
+            button {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div class="book">
+        <div class="book-cover" id="cover">
+            <div class="cover-image">
+                <h1 class="book-title">La princesa de acero</h1>
+                <p class="book-author">Un cuento corto</p>
+            </div>
+        </div>
+
+        <div class="page" id="page1">
+            <div class="front">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    <h1>La princesa de acero</h1>
+                    <p>En un reino oculto entre montañas azules, vivía una princesa de alma indomable. No bordaba pañuelos, no tejía encajes.</p>
+                    <p>Ella cabalgaba, luchaba, y comandaba ejércitos. Le llamaban Aelina, la de acero. Pero bajo su armadura, latía un corazón suave. Un corazón que, en secreto, soñaba con alguien...</p>
+                    <button class="audio-button" data-audio="page1">
+                        <i class="fa-solid fa-play"></i>
+                    </button>
+                </div>
+                <span class="page-number">1</span>
+                <div class="page-edge"></div>
+            </div>
+            <div class="back">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    <h1>El caballero de los ojos honestos</h1>
+                    <p>Ese alguien era Théren, un caballero fiel, valiente pero de voz serena, que no buscaba tronos, solo verdad.</p>
+                    <p>Él no se inclinaba por obligación, sino que la miraba como igual. Luchaban juntos, risa y acero en cada jornada. Y aunque Aelina era fuerte, se sentía libre con él.</p>
+                    <button class="audio-button" data-audio="page2">
+                        <i class="fa-solid fa-play"></i>
+                    </button>
+                </div>
+                <span class="page-number">2</span>
+            </div>
+        </div>
+
+        <div class="page" id="page2">
+            <div class="front">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    <h1>El caballero de los ojos honestos</h1>
+                    <p>Ese alguien era Théren, un caballero fiel, valiente pero de voz serena, que no buscaba tronos, solo verdad.</p>
+                    <p>Él no se inclinaba por obligación, sino que la miraba como igual. Luchaban juntos, risa y acero en cada jornada. Y aunque Aelina era fuerte, se sentía libre con él.</p>
+                    <button class="audio-button" data-audio="page3">
+                        <i class="fa-solid fa-play"></i>
+                    </button>
+                </div>
+                <span class="page-number">3</span>
+                <div class="page-edge"></div>
+            </div>
+            <div class="back">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    <p></p>
+                    <p></p>
+                    <button class="audio-button" data-audio="page4">
+                        <i class="fa-solid fa-play"></i>
+                    </button>
+                </div>
+                <span class="page-number">4</span>
+            </div>
+        </div>
+
+        <div class="page" id="page3">
+            <div class="front">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    <h1>La decisión del corazón</h1>
+                    <p>Un día, el consejo del reino decidió: “Aelina, debes casarte con un príncipe aliado.” Pero ella, al fin, habló con voz de trueno: “Yo elegiré a quien me vea como soy.”</p>
+                    <p>Y en medio del salón, su mirada buscó solo a uno. El caballero no dijo nada… solo esperó. Y Aelina sonrió, valiente como siempre: “Elijo a quien no me quiere encerrar,sino correr conmigo entre batallas y estrellas.”</p>
+                    <button class="audio-button" data-audio="page5">
+                        <i class="fa-solid fa-play"></i>
+                    </button>
+                </div>
+                <span class="page-number">5</span>
+                <div class="page-edge"></div>
+            </div>
+            <div class="back">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    
+                    <button class="audio-button" data-audio="page6">
+                        <i class="fa-solid fa-play"></i>
+                    </button>
+                </div>
+                <span class="page-number">6</span>
+            </div>
+        </div>
+
+        <div class="page" id="page4">
+            <div class="front">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    <h1>Juntos, sin dejar de ser ellos</h1>
+                    <p>No fue un cuento de hadas clásico, no dejó de pelear, ni él de soñar. Vivieron en libertad, con espadas al cinto, y amor en los gestos sencillos.</p>
+                    <p>Porque ser fuerte no es renunciar al amor, y amar no es debilidad. Y así, la princesa de acero vivió con su caballero... no como reina atada, sino como compañera elegida.</p>
+                    <button class="audio-button" data-audio="page7">
+                        <i class="fa-solid fa-play"></i>
+                    </button>
+                </div>
+                <span class="page-number">7</span>
+                <div class="page-edge"></div>
+            </div>
+            <div class="back">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    <button class="audio-button" data-audio="page8">
+                        <i class="fa-solid fa-play"></i>
+                    </button>
+                </div>
+                <span class="page-number">8</span>
+            </div>
+        </div>
+
+        <div class="page" id="page5">
+            <div class="front">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    <button class="audio-button" data-audio="page9">
+                        <i class="fa-solid fa-play"></i>
+                    </button>
+                </div>
+                <span class="page-number">9</span>
+                <div class="page-edge"></div>
+            </div>
+            <div class="back">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    
+                    <p class="book-author" style="margin-top: 80px;">Fin</p>
+                    <button class="audio-button" data-audio="page10">
+                        <i class="fa-solid fa-play"></i>
+                    </button>
+                </div>
+                <span class="page-number">10</span>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button id="prev" disabled>Página anterior</button>
+            <button id="next">Página siguiente</button>
+        </div>
+    </div>
+
+    <script>
+        const cover = document.getElementById('cover');
+        const pages = [
+            document.getElementById('page1'),
+            document.getElementById('page2'),
+            document.getElementById('page3'),
+            document.getElementById('page4'),
+            document.getElementById('page5')
+        ];
+        const prevBtn = document.getElementById('prev');
+        const nextBtn = document.getElementById('next');
+
+        let currentPage = -1; // -1 means cover is showing
+        let audioPlayers = {};
+
+        // Create audio elements
+        const audioSources = {
+            'page1': 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Lzc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAASAAAeMwAUFBQUFCIiIiIiIjAwMDAwMD09PT09PUlJSUlJSVZWVlZWVmRkZGRkZHFxcXFxcX5+fn5+fpubm5ubm6enp6enp7S0tLS0tMDAwMDAwM3Nzc3Nzdrb29vb2+bm5ubm5vLy8vLy8v////8AAAAATGF2YzU4LjU0AAAAAAAAAAAAAAAAJAb/AAAAAAAAAB4zJ0wYAAAAAAAAAAAAAAAAAAAA//tAZAAAAn4Qy2MGGlASAAA/AAAABFNGG0QwYqVBIAAz8AAAEAxZcEhCSSpa/X9vTvla9v78VrX1siSQep9KnqbR//XSVv/zHHQhP8DzM0rEno/j+OY9C57vfOIo+vd5wQIGPY0SAQyMfBwEAtD24tD4FktZoaBhUEiDIgBICyQAHUfgOAdnWFQMr/SSJYSMPr/oK2R23i9GR7l7vfMYBhQSEEAOEhQtTLMlzZo8DGNWzdq0//M0WTcZs26JOm9N66L0RA1h4BAQQIoAioFUG2BjDdPpQbHwsDwYHQVDgOSAA6AfQdAiQ4NSo+ygkpDpb/0FcJev3L0tJM6Z7v+s/g0t4IgsUDUzMXTMMmtOmz7IvQKZFGKJMmSNOn//nJbjMzVQzRP8xKM0AXAYPCQKFBUgSQOO5K7CT3FgQrAqEgEtAQQAG8TdGCCWaRdxYzIJbf0F2Jdv2L0KdOmfMs2f/+YtMElnAoBwgbMmSpJk1a1aP1JCQnKE5KTExNRLS0vNzc3M0dQzIBAQQFUAUwO4sADtNSMN5BJBBUKAKBAQJAAbSGQi8oFSS4oKDJQOk0pHX/yheZxPS6pq1a0dI89L+u2xDpAkoVcZISjM5UdJYqSfqST8YiQkxcRERMVExUTHRIRCgYKCACYHsAwHOpYTUteCAoCBUMAYIAH0DtNHbgKBojxqAyVgQK2UH7/tEZDQD+1NFGfmPfQBLgBN/AAAAE6kYY8MMefAEsAE38AAAAcpf09b1HDQsbJD9TzUv8g7Jz/zDIlQcVJSIpMTU5MzM5OTk6PUFBUVFAQAVgAwjwC7KXVghBQYDQQGhYKNwA+jTfN8WCoWyUFBUkpKCk+lB9/0HHf8/Nf/5iJekR2Kz6X1Klr8QIPqTVZWXWIRoGBA0QGTAWHUDYLBFjjYgJIgBDBkMAYEiWf2z//YQoEAACQvmDQTGhUP+UCRSB9/0uyOFDTTgHvaS7k/+jFNSLsYQlVxWRxI3SmLWpJf5QVFRU1NU1NTU0FCkmJiYmJiAGQDsGIQaMIpKDfpCCwYFQwHhwAf3YbmGLBQwCcGCRYgL1ZhSf+grf8uIoKmIVFkP7KBSh/MUlyUUiUzGe6JOmSL0v/MzExMTEgYA4wKgDQCACt/r8VBgMDAcGAIEkMzMzlc8WDJQGCRQfP+Ui5P+jRqy19aprERHILHEDdqDHnoTMzlvT0zJMzMzMzMzMzMzFsRMQU1FMy45OS41VVVVVVVVVVVVVVVVV',
+            'page2': 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Lzc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAASAAAeMwAUFBQUFCIiIiIiIjAwMDAwMD09PT09PUlJSUlJSVZWVlZWVmRkZGRkZHFxcXFxcX5+fn5+fpubm5ubm6enp6enp7S0tLS0tMDAwMDAwM3Nzc3Nzdrb29vb2+bm5ubm5vLy8vLy8v////8AAAAATGF2YzU4LjU0AAAAAAAAAAAAAAAAJAb/AAAAAAAAAB4zJ0wYAAAAAAAAAAAAAAAAAAAA//tAZAAAAn4Qy2MGGlASAAA/AAAABFNGG0QwYqVBIAAz8AAAEAxZcEhCSSpa/X9vTvla9v78VrX1siSQep9KnqbR//XSVv/zHHQhP8DzM0rEno/j+OY9C57vfOIo+vd5wQIGPY0SAQyMfBwEAtD24tD4FktZoaBhUEiDIgBICyQAHUfgOAdnWFQMr/SSJYSMPr/oK2R23i9GR7l7vfMYBhQSEEAOEhQtTLMlzZo8DGNWzdq0//M0WTcZs26JOm9N66L0RA1h4BAQQIoAioFUG2BjDdPpQbHwsDwYHQVDgOSAA6AfQdAiQ4NSo+ygkpDpb/0FcJev3L0tJM6Z7v+s/g0t4IgsUDUzMXTMMmtOmz7IvQKZFGKJMmSNOn//nJbjMzVQzRP8xKM0AXAYPCQKFBUgSQOO5K7CT3FgQrAqEgEtAQQAG8TdGCCWaRdxYzIJbf0F2Jdv2L0KdOmfMs2f/+YtMElnAoBwgbMmSpJk1a1aP1JCQnKE5KTExNRLS0vNzc3M0dQzIBAQQFUAUwO4sADtNSMN5BJBBUKAKBAQJAAbSGQi8oFSS4oKDJQOk0pHX/yheZxPS6pq1a0dI89L+u2xDpAkoVcZISjM5UdJYqSfqST8YiQkxcRERMVExUTHRIRCgYKCACYHsAwHOpYTUteCAoCBUMAYIAH0DtNHbgKBojxqAyVgQK2UH7/tEZDQD+1NFGfmPfQBLgBN/AAAAE6kYY8MMefAEsAE38AAAAcpf09b1HDQsbJD9TzUv8g7Jz/zDIlQcVJSIpMTU5MzM5OTk6PUFBUVFAQAVgAwjwC7KXVghBQYDQQGhYKNwA+jTfN8WCoWyUFBUkpKCk+lB9/0HHf8/Nf/5iJekR2Kz6X1Klr8QIPqTVZWXWIRoGBA0QGTAWHUDYLBFjjYgJIgBDBkMAYEiWf2z//YQoEAACQvmDQTGhUP+UCRSB9/0uyOFDTTgHvaS7k/+jFNSLsYQlVxWRxI3SmLWpJf5QVFRU1NU1NTU0FCkmJiYmJiAGQDsGIQaMIpKDfpCCwYFQwHhwAf3YbmGLBQwCcGCRYgL1ZhSf+grf8uIoKmIVFkP7KBSh/MUlyUUiUzGe6JOmSL0v/MzExMTEgYA4wKgDQCACt/r8VBgMDAcGAIEkMzMzlc8WDJQGCRQfP+Ui5P+jRqy19aprERHILHEDdqDHnoTMzlvT0zJMzMzMzMzMzMzFsRMQU1FMy45OS41VVVVVVVVVVVVVVVVV',
+            'page3': 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Lzc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAASAAAeMwAUFBQUFCIiIiIiIjAwMDAwMD09PT09PUlJSUlJSVZWVlZWVmRkZGRkZHFxcXFxcX5+fn5+fpubm5ubm6enp6enp7S0tLS0tMDAwMDAwM3Nzc3Nzdrb29vb2+bm5ubm5vLy8vLy8v////8AAAAATGF2YzU4LjU0AAAAAAAAAAAAAAAAJAb/AAAAAAAAAB4zJ0wYAAAAAAAAAAAAAAAAAAAA//tAZAAAAn4Qy2MGGlASAAA/AAAABFNGG0QwYqVBIAAz8AAAEAxZcEhCSSpa/X9vTvla9v78VrX1siSQep9KnqbR//XSVv/zHHQhP8DzM0rEno/j+OY9C57vfOIo+vd5wQIGPY0SAQyMfBwEAtD24tD4FktZoaBhUEiDIgBICyQAHUfgOAdnWFQMr/SSJYSMPr/oK2R23i9GR7l7vfMYBhQSEEAOEhQtTLMlzZo8DGNWzdq0//M0WTcZs26JOm9N66L0RA1h4BAQQIoAioFUG2BjDdPpQbHwsDwYHQVDgOSAA6AfQdAiQ4NSo+ygkpDpb/0FcJev3L0tJM6Z7v+s/g0t4IgsUDUzMXTMMmtOmz7IvQKZFGKJMmSNOn//nJbjMzVQzRP8xKM0AXAYPCQKFBUgSQOO5K7CT3FgQrAqEgEtAQQAG8TdGCCWaRdxYzIJbf0F2Jdv2L0KdOmfMs2f/+YtMElnAoBwgbMmSpJk1a1aP1JCQnKE5KTExNRLS0vNzc3M0dQzIBAQQFUAUwO4sADtNSMN5BJBBUKAKBAQJAAbSGQi8oFSS4oKDJQOk0pHX/yheZxPS6pq1a0dI89L+u2xDpAkoVcZISjM5UdJYqSfqST8YiQkxcRERMVExUTHRIRCgYKCACYHsAwHOpYTUteCAoCBUMAYIAH0DtNHbgKBojxqAyVgQK2UH7/tEZDQD+1NFGfmPfQBLgBN/AAAAE6kYY8MMefAEsAE38AAAAcpf09b1HDQsbJD9TzUv8g7Jz/zDIlQcVJSIpMTU5MzM5OTk6PUFBUVFAQAVgAwjwC7KXVghBQYDQQGhYKNwA+jTfN8WCoWyUFBUkpKCk+lB9/0HHf8/Nf/5iJekR2Kz6X1Klr8QIPqTVZWXWIRoGBA0QGTAWHUDYLBFjjYgJIgBDBkMAYEiWf2z//YQoEAACQvmDQTGhUP+UCRSB9/0uyOFDTTgHvaS7k/+jFNSLsYQlVxWRxI3SmLWpJf5QVFRU1NU1NTU0FCkmJiYmJiAGQDsGIQaMIpKDfpCCwYFQwHhwAf3YbmGLBQwCcGCRYgL1ZhSf+grf8uIoKmIVFkP7KBSh/MUlyUUiUzGe6JOmSL0v/MzExMTEgYA4wKgDQCACt/r8VBgMDAcGAIEkMzMzlc8WDJQGCRQfP+Ui5P+jRqy19aprERHILHEDdqDHnoTMzlvT0zJMzMzMzMzMzMzFsRMQU1FMy45OS41VVVVVVVVVVVVVVVVV',
+            'page4': 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Lzc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAASAAAeMwAUFBQUFCIiIiIiIjAwMDAwMD09PT09PUlJSUlJSVZWVlZWVmRkZGRkZHFxcXFxcX5+fn5+fpubm5ubm6enp6enp7S0tLS0tMDAwMDAwM3Nzc3Nzdrb29vb2+bm5ubm5vLy8vLy8v////8AAAAATGF2YzU4LjU0AAAAAAAAAAAAAAAAJAb/AAAAAAAAAB4zJ0wYAAAAAAAAAAAAAAAAAAAA//tAZAAAAn4Qy2MGGlASAAA/AAAABFNGG0QwYqVBIAAz8AAAEAxZcEhCSSpa/X9vTvla9v78VrX1siSQep9KnqbR//XSVv/zHHQhP8DzM0rEno/j+OY9C57vfOIo+vd5wQIGPY0SAQyMfBwEAtD24tD4FktZoaBhUEiDIgBICyQAHUfgOAdnWFQMr/SSJYSMPr/oK2R23i9GR7l7vfMYBhQSEEAOEhQtTLMlzZo8DGNWzdq0//M0WTcZs26JOm9N66L0RA1h4BAQQIoAioFUG2BjDdPpQbHwsDwYHQVDgOSAA6AfQdAiQ4NSo+ygkpDpb/0FcJev3L0tJM6Z7v+s/g0t4IgsUDUzMXTMMmtOmz7IvQKZFGKJMmSNOn//nJbjMzVQzRP8xKM0AXAYPCQKFBUgSQOO5K7CT3FgQrAqEgEtAQQAG8TdGCCWaRdxYzIJbf0F2Jdv2L0KdOmfMs2f/+YtMElnAoBwgbMmSpJk1a1aP1JCQnKE5KTExNRLS0vNzc3M0dQzIBAQQFUAUwO4sADtNSMN5BJBBUKAKBAQJAAbSGQi8oFSS4oKDJQOk0pHX/yheZxPS6pq1a0dI89L+u2xDpAkoVcZISjM5UdJYqSfqST8YiQkxcRERMVExUTHRIRCgYKCACYHsAwHOpYTUteCAoCBUMAYIAH0DtNHbgKBojxqAyVgQK2UH7/tEZDQD+1NFGfmPfQBLgBN/AAAAE6kYY8MMefAEsAE38AAAAcpf09b1HDQsbJD9TzUv8g7Jz/zDIlQcVJSIpMTU5MzM5OTk6PUFBUVFAQAVgAwjwC7KXVghBQYDQQGhYKNwA+jTfN8WCoWyUFBUkpKCk+lB9/0HHf8/Nf/5iJekR2Kz6X1Klr8QIPqTVZWXWIRoGBA0QGTAWHUDYLBFjjYgJIgBDBkMAYEiWf2z//YQoEAACQvmDQTGhUP+UCRSB9/0uyOFDTTgHvaS7k/+jFNSLsYQlVxWRxI3SmLWpJf5QVFRU1NU1NTU0FCkmJiYmJiAGQDsGIQaMIpKDfpCCwYFQwHhwAf3YbmGLBQwCcGCRYgL1',
+            'page5': 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Lzc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAASAAAeMwAUFBQUFCIiIiIiIjAwMDAwMD09PT09PUlJSUlJSVZWVlZWVmRkZGRkZHFxcXFxcX5+fn5+fpubm5ubm6enp6enp7S0tLS0tMDAwMDAwM3Nzc3Nzdrb29vb2+bm5ubm5vLy8vLy8v////8AAAAATGF2YzU4LjU0AAAAAAAAAAAAAAAAJAb/AAAAAAAAAB4zJ0wYAAAAAAAAAAAAAAAAAAAA//tAZAAAAn4Qy2MGGlASAAA/AAAABFNGG0QwYqVBIAAz8AAAEAxZcEhCSSpa/X9vTvla9v78VrX1siSQep9KnqbR//XSVv/zHHQhP8DzM0rEno/j+OY9C57vfOIo+vd5wQIGPY0SAQyMfBwEAtD24tD4FktZoaBhUEiDIgBICyQAHUfgOAdnWFQMr/SSJYSMPr/oK2R23i9GR7l7vfMYBhQSEEAOEhQtTLMlzZo8DGNWzdq0//M0WTcZs26JOm9N66L0RA1h4BAQQIoAioFUG2BjDdPpQbHwsDwYHQVDgOSAA6AfQdAiQ4NSo+ygkpDpb/0FcJev3L0tJM6Z7v+s/g0t4IgsUDUzMXTMMmtOmz7IvQKZFGKJMmSNOn//nJbjMzVQzRP8xKM0AXAYPCQKFBUgSQOO5K7CT3FgQrAqEgEtAQQAG8TdGCCWaRdxYzIJbf0F2Jdv2L0KdOmfMs2f/+YtMElnAoBwgbMmSpJk1a1aP1JCQnKE5KTExNRLS0vNzc3M0dQzIBAQQFUAUwO4sADtNSMN5BJBBUKAKBAQJAAbSGQi8oFSS4oKDJQOk0pHX/yheZxPS6pq1a0dI89L+u2xDpAkoVcZISjM5UdJYqSfqST8YiQkxcRERMVExUTHRIRCgYKCACYHsAwHOpYTUteCAoCBUMAYIAH0DtNHbgKBojxqAyVgQK2UH7/tEZDQD+1NFGfmPfQBLgBN/AAAAE6kYY8MMefAEsAE38AAAAcpf09b1HDQsbJD9TzUv8g7Jz/zDIlQcVJSIpMTU5MzM5OTk6PUFBUVFAQAVgAwjwC7KXVghBQYDQQGhYKNwA+jTfN8WCoWyUFBUkpKCk+lB9/0HHf8/Nf/5iJekR2Kz6X1Klr8QIPqTVZWXWIRoGBA0QGTAWHUDYLBFjjYgJIgBDBkMAYEiWf2z//YQoEAACQvmDQTGhUP+UCRSB9/0uyOFDTTgHvaS7k/+jFNSLsYQlVxWRxI3SmLWpJf5QVFRU1NU1NTU0FCkmJiYmJiAGQDsGIQaMIpKDfpCCwYFQwHhwAf3YbmGLBQwCcGCRYgL1ZhSf+grf8uIoKmIVFkP7KBSh/MUlyUUiUzGe6JOmSL0v/MzExMTEgYA4wKgDQCACt/r8VBgMDAcGAIEkMzMzlc8WDJQGCRQfP+Ui5P+jRqy19aprERHILHEDdqDHnoTMzlvT0zJMzMzMzMzMzMzFsRMQU1FMy45OS41VVVVVVVVVVVVVVVVV',
+            'page6': 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Lzc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAASAAAeMwAUFBQUFCIiIiIiIjAwMDAwMD09PT09PUlJSUlJSVZWVlZWVmRkZGRkZHFxcXFxcX5+fn5+fpubm5ubm6enp6enp7S0tLS0tMDAwMDAwM3Nzc3Nzdrb29vb2+bm5ubm5vLy8vLy8v////8AAAAATGF2YzU4LjU0AAAAAAAAAAAAAAAAJAb/AAAAAAAAAB4zJ0wYAAAAAAAAAAAAAAAAAAAA//tAZAAAAn4Qy2MGGlASAAA/AAAABFNGG0QwYqVBIAAz8AAAEAxZcEhCSSpa/X9vTvla9v78VrX1siSQep9KnqbR//XSVv/zHHQhP8DzM0rEno/j+OY9C57vfOIo+vd5wQIGPY0SAQyMfBwEAtD24tD4FktZoaBhUEiDIgBICyQAHUfgOAdnWFQMr/SSJYSMPr/oK2R23i9GR7l7vfMYBhQSEEAOEhQtTLMlzZo8DGNWzdq0//M0WTcZs26JOm9N66L0RA1h4BAQQIoAioFUG2BjDdPpQbHwsDwYHQVDgOSAA6AfQdAiQ4NSo+ygkpDpb/0FcJev3L0tJM6Z7v+s/g0t4IgsUDUzMXTMMmtOmz7IvQKZFGKJMmSNOn//nJbjMzVQzRP8xKM0AXAYPCQKFBUgSQOO5K7CT3FgQrAqEgEtAQQAG8TdGCCWaRdxYzIJbf0F2Jdv2L0KdOmfMs2f/+YtMElnAoBwgbMmSpJk1a1aP1JCQnKE5KTExNRLS0vNzc3M0dQzIBAQQFUAUwO4sADtNSMN5BJBBUKAKBAQJAAbSGQi8oFSS4oKDJQOk0pHX/yheZxPS6pq1a0dI89L+u2xDpAkoVcZISjM5UdJYqSfqST8YiQkxcRERMVExUTHRIRCgYKCACYHsAwHOpYTUteCAoCBUMAYIAH0DtNHbgKBojxqAyVgQK2UH7/tEZDQD+1NFGfmPfQBLgBN/AAAAE6kYY8MMefAEsAE38AAAAcpf09b1HDQsbJD9TzUv8g7Jz/zDIlQcVJSIpMTU5MzM5OTk6PUFBUVFAQAVgAwjwC7KXVghBQYDQQGhYKNwA+jTfN8WCoWyUFBUkpKCk+lB9/0HHf8/Nf/5iJekR2Kz6X1Klr8QIPqTVZWXWIRoGBA0QGTAWHUDYLBFjjYgJIgBDBkMAYEiWf2z//YQoEAACQvmDQTGhUP+UCRSB9/0uyOFDTTgHvaS7k/+jFNSLsYQlVxWRxI3SmLWpJf5QVFRU1NU1NTU0FCkmJiYmJiAGQDsGIQaMIpKDfpCCwYFQwHhwAf3YbmGLBQwCcGCRYgL1ZhSf+grf8uIoKmIVFkP7KBSh/MUlyUUiUzGe6JOmSL0v/MzExMTEgYA4wKgDQCACt/r8VBgMDAcGAIEkMzMzlc8WDJQGCRQfP+Ui5P+jRqy19aprERHILHEDdqDHnoTMzlvT0zJMzMzMzMzMzMzFsRMQU1FMy45OS41VVVVVVVVVVVVVVVVV',
+            'page7': 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Lzc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAASAAAeMwAUFBQUFCIiIiIiIjAwMDAwMD09PT09PUlJSUlJSVZWVlZWVmRkZGRkZHFxcXFxcX5+fn5+fpubm5ubm6enp6enp7S0tLS0tMDAwMDAwM3Nzc3Nzdrb29vb2+bm5ubm5vLy8vLy8v////8AAAAATGF2YzU4LjU0AAAAAAAAAAAAAAAAJAb/AAAAAAAAAB4zJ0wYAAAAAAAAAAAAAAAAAAAA//tAZAAAAn4Qy2MGGlASAAA/AAAABFNGG0QwYqVBIAAz8AAAEAxZcEhCSSpa/X9vTvla9v78VrX1siSQep9KnqbR//XSVv/zHHQhP8DzM0rEno/j+OY9C57vfOIo+vd5wQIGPY0SAQyMfBwEAtD24tD4FktZoaBhUEiDIgBICyQAHUfgOAdnWFQMr/SSJYSMPr/oK2R23i9GR7l7vfMYBhQSEEAOEhQtTLMlzZo8DGNWzdq0//M0WTcZs26JOm9N66L0RA1h4BAQQIoAioFUG2BjDdPpQbHwsDwYHQVDgOSAA6AfQdAiQ4NSo+ygkpDpb/0FcJev3L0tJM6Z7v+s/g0t4IgsUDUzMXTMMmtOmz7IvQKZFGKJMmSNOn//nJbjMzVQzRP8xKM0AXAYPCQKFBUgSQOO5K7CT3FgQrAqEgEtAQQAG8TdGCCWaRdxYzIJbf0F2Jdv2L0KdOmfMs2f/+YtMElnAoBwgbMmSpJk1a1aP1JCQnKE5KTExNRLS0vNzc3M0dQzIBAQQFUAUwO4sADtNSMN5BJBBUKAKBAQJAAbSGQi8oFSS4oKDJQOk0pHX/yheZxPS6pq1a0dI89L+u2xDpAkoVcZISjM5UdJYqSfqST8YiQkxcRERMVExUTHRIRCgYKCACYHsAwHOpYTUteCAoCBUMAYIAH0DtNHbgKBojxqAyVgQK2UH7/tEZDQD+1NFGfmPfQBLgBN/AAAAE6kYY8MMefAEsAE38AAAAcpf09b1HDQsbJD9TzUv8g7Jz/zDIlQcVJSIpMTU5MzM5OTk6PUFBUVFAQAVgAwjwC7KXVghBQYDQQGhYKNwA+jTfN8WCoWyUFBUkpKCk+lB9/0HHf8/Nf/5iJekR2Kz6X1Klr8QIPqTVZWXWIRoGBA0QGTAWHUDYLBFjjYgJIgBDBkMAYEiWf2z//YQoEAACQvmDQTGhUP+UCRSB9/0uyOFDTTgHvaS7k/+jFNSLsYQlVxWRxI3SmLWpJf5QVFRU1NU1NTU0FCkmJiYmJiAGQDsGIQaMIpKDfpCCwYFQwHhwAf3YbmGLBQwCcGCRYgL1ZhSf+grf8uIoKmIVFkP7KBSh/MUlyUUiUzGe6JOmSL0v/MzExMTEgYA4wKgDQCACt/r8VBgMDAcGAIEkMzMzlc8WDJQGCRQfP+Ui5P+jRqy19aprERHILHEDdqDHnoTMzlvT0zJMzMzMzMzMzMzFsRMQU1FMy45OS41VVVVVVVVVVVVVVVVV',
+            'page8': 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Lzc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAASAAAeMwAUFBQUFCIiIiIiIjAwMDAwMD09PT09PUlJSUlJSVZWVlZWVmRkZGRkZHFxcXFxcX5+fn5+fpubm5ubm6enp6enp7S0tLS0tMDAwMDAwM3Nzc3Nzdrb29vb2+bm5ubm5vLy8vLy8v////8AAAAATGF2YzU4LjU0AAAAAAAAAAAAAAAAJAb/AAAAAAAAAB4zJ0wYAAAAAAAAAAAAAAAAAAAA//tAZAAAAn4Qy2MGGlASAAA/AAAABFNGG0QwYqVBIAAz8AAAEAxZcEhCSSpa/X9vTvla9v78VrX1siSQep9KnqbR//XSVv/zHHQhP8DzM0rEno/j+OY9C57vfOIo+vd5wQIGPY0SAQyMfBwEAtD24tD4FktZoaBhUEiDIgBICyQAHUfgOAdnWFQMr/SSJYSMPr/oK2R23i9GR7l7vfMYBhQSEEAOEhQtTLMlzZo8DGNWzdq0//M0WTcZs26JOm9N66L0RA1h4BAQQIoAioFUG2BjDdPpQbHwsDwYHQVDgOSAA6AfQdAiQ4NSo+ygkpDpb/0FcJev3L0tJM6Z7v+s/g0t4IgsUDUzMXTMMmtOmz7IvQKZFGKJMmSNOn//nJbjMzVQzRP8xKM0AXAYPCQKFBUgSQOO5K7CT3FgQrAqEgEtAQQAG8TdGCCWaRdxYzIJbf0F2Jdv2L0KdOmfMs2f/+YtMElnAoBwgbMmSpJk1a1aP1JCQnKE5KTExNRLS0vNzc3M0dQzIBAQQFUAUwO4sADtNSMN5BJBBUKAKBAQJAAbSGQi8oFSS4oKDJQOk0pHX/yheZxPS6pq1a0dI89L+u2xDpAkoVcZISjM5UdJYqSfqST8YiQkxcRERMVExUTHRIRCgYKCACYHsAwHOpYTUteCAoCBUMAYIAH0DtNHbgKBojxqAyVgQK2UH7/tEZDQD+1NFGfmPfQBLgBN/AAAAE6kYY8MMefAEsAE38AAAAcpf09b1HDQsbJD9TzUv8g7Jz/zDIlQcVJSIpMTU5MzM5OTk6PUFBUVFAQAVgAwjwC7KXVghBQYDQQGhYKNwA+jTfN8WCoWyUFBUkpKCk+lB9/0HHf8/Nf/5iJekR2Kz6X1Klr8QIPqTVZWXWIRoGBA0QGTAWHUDYLBFjjYgJIgBDBkMAYEiWf2z//YQoEAACQvmDQTGhUP+UCRSB9/0uyOFDTTgHvaS7k/+jFNSLsYQlVxWRxI3SmLWpJf5QVFRU1NU1NTU0FCkmJiYmJiAGQDsGIQaMIpKDfpCCwYFQwHhwAf3YbmGLBQwCcGCRYgL1ZhSf+grf8uIoKmIVFkP7KBSh/MUlyUUiUzGe6JOmSL0v/MzExMTEgYA4wKgDQCACt/r8VBgMDAcGAIEkMzMzlc8WDJQGCRQfP+Ui5P+jRqy19aprERHILHEDdqDHnoTMzlvT0zJMzMzMzMzMzMzFsRMQU1FMy45OS41VVVVVVVVVVVVVVVVV',
+            'page9': 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Lzc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAASAAAeMwAUFBQUFCIiIiIiIjAwMDAwMD09PT09PUlJSUlJSVZWVlZWVmRkZGRkZHFxcXFxcX5+fn5+fpubm5ubm6enp6enp7S0tLS0tMDAwMDAwM3Nzc3Nzdrb29vb2+bm5ubm5vLy8vLy8v////8AAAAATGF2YzU4LjU0AAAAAAAAAAAAAAAAJAb/AAAAAAAAAB4zJ0wYAAAAAAAAAAAAAAAAAAAA//tAZAAAAn4Qy2MGGlASAAA/AAAABFNGG0QwYqVBIAAz8AAAEAxZcEhCSSpa/X9vTvla9v78VrX1siSQep9KnqbR//XSVv/zHHQhP8DzM0rEno/j+OY9C57vfOIo+vd5wQIGPY0SAQyMfBwEAtD24tD4FktZoaBhUEiDIgBICyQAHUfgOAdnWFQMr/SSJYSMPr/oK2R23i9GR7l7vfMYBhQSEEAOEhQtTLMlzZo8DGNWzdq0//M0WTcZs26JOm9N66L0RA1h4BAQQIoAioFUG2BjDdPpQbHwsDwYHQVDgOSAA6AfQdAiQ4NSo+ygkpDpb/0FcJev3L0tJM6Z7v+s/g0t4IgsUDUzMXTMMmtOmz7IvQKZFGKJMmSNOn//nJbjMzVQzRP8xKM0AXAYPCQKFBUgSQOO5K7CT3FgQrAqEgEtAQQAG8TdGCCWaRdxYzIJbf0F2Jdv2L0KdOmfMs2f/+YtMElnAoBwgbMmSpJk1a1aP1JCQnKE5KTExNRLS0vNzc3M0dQzIBAQQFUAUwO4sADtNSMN5BJBBUKAKBAQJAAbSGQi8oFSS4oKDJQOk0pHX/yheZxPS6pq1a0dI89L+u2xDpAkoVcZISjM5UdJYqSfqST8YiQkxcRERMVExUTHRIRCgYKCACYHsAwHOpYTUteCAoCBUMAYIAH0DtNHbgKBojxqAyVgQK2UH7/tEZDQD+1NFGfmPfQBLgBN/AAAAE6kYY8MMefAEsAE38AAAAcpf09b1HDQsbJD9TzUv8g7Jz/zDIlQcVJSIpMTU5MzM5OTk6PUFBUVFAQAVgAwjwC7KXVghBQYDQQGhYKNwA+jTfN8WCoWyUFBUkpKCk+lB9/0HHf8/Nf/5iJekR2Kz6X1Klr8QIPqTVZWXWIRoGBA0QGTAWHUDYLBFjjYgJIgBDBkMAYEiWf2z//YQoEAACQvmDQTGhUP+UCRSB9/0uyOFDTTgHvaS7k/+jFNSLsYQlVxWRxI3SmLWpJf5QVFRU1NU1NTU0FCkmJiYmJiAGQDsGIQaMIpKDfpCCwYFQwHhwAf3YbmGLBQwCcGCRYgL1ZhSf+grf8uIoKmIVFkP7KBSh/MUlyUUiUzGe6JOmSL0v/MzExMTEgYA4wKgDQCACt/r8VBgMDAcGAIEkMzMzlc8WDJQGCRQfP+Ui5P+jRqy19aprERHILHEDdqDHnoTMzlvT0zJMzMzMzMzMzMzFsRMQU1FMy45OS41VVVVVVVVVVVVVVVVV',
+            'page10': 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Lzc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAASAAAeMwAUFBQUFCIiIiIiIjAwMDAwMD09PT09PUlJSUlJSVZWVlZWVmRkZGRkZHFxcXFxcX5+fn5+fpubm5ubm6enp6enp7S0tLS0tMDAwMDAwM3Nzc3Nzdrb29vb2+bm5ubm5vLy8vLy8v////8AAAAATGF2YzU4LjU0AAAAAAAAAAAAAAAAJAb/AAAAAAAAAB4zJ0wYAAAAAAAAAAAAAAAAAAAA//tAZAAAAn4Qy2MGGlASAAA/AAAABFNGG0QwYqVBIAAz8AAAEAxZcEhCSSpa/X9vTvla9v78VrX1siSQep9KnqbR//XSVv/zHHQhP8DzM0rEno/j+OY9C57vfOIo+vd5wQIGPY0SAQyMfBwEAtD24tD4FktZoaBhUEiDIgBICyQAHUfgOAdnWFQMr/SSJYSMPr/oK2R23i9GR7l7vfMYBhQSEEAOEhQtTLMlzZo8DGNWzdq0//M0WTcZs26JOm9N66L0RA1h4BAQQIoAioFUG2BjDdPpQbHwsDwYHQVDgOSAA6AfQdAiQ4NSo+ygkpDpb/0FcJev3L0tJM6Z7v+s/g0t4IgsUDUzMXTMMmtOmz7IvQKZFGKJMmSNOn//nJbjMzVQzRP8xKM0AXAYPCQKFBUgSQOO5K7CT3FgQrAqEgEtAQQAG8TdGCCWaRdxYzIJbf0F2Jdv2L0KdOmfMs2f/+YtMElnAoBwgbMmSpJk1a1aP1JCQnKE5KTExNRLS0vNzc3M0dQzIBAQQFUAUwO4sADtNSMN5BJBBUKAKBAQJAAbSGQi8oFSS4oKDJQOk0pHX/yheZxPS6pq1a0dI89L+u2xDpAkoVcZISjM5UdJYqSfqST8YiQkxcRERMVExUTHRIRCgYKCACYHsAwHOpYTUteCAoCBUMAYIAH0DtNHbgKBojxqAyVgQK2UH7/tEZDQD+1NFGfmPfQBLgBN/AAAAE6kYY8MMefAEsAE38AAAAcpf09b1HDQsbJD9TzUv8g7Jz/zDIlQcVJSIpMTU5MzM5OTk6PUFBUVFAQAVgAwjwC7KXVghBQYDQQGhYKNwA+jTfN8WCoWyUFBUkpKCk+lB9/0HHf8/Nf/5iJekR2Kz6X1Klr8QIPqTVZWXWIRoGBA0QGTAWHUDYLBFjjYgJIgBDBkMAYEiWf2z//YQoEAACQvmDQTGhUP+UCRSB9/0uyOFDTTgHvaS7k/+jFNSLsYQlVxWRxI3SmLWpJf5QVFRU1NU1NTU0FCkmJiYmJiAGQDsGIQaMIpKDfpCCwYFQwHhwAf3YbmGLBQwCcGCRYgL1ZhSf+grf8uIoKmIVFkP7KBSh/MUlyUUiUzGe6JOmSL0v/MzExMTEgYA4wKgDQCACt/r8VBgMDAcGAIEkMzMzlc8WDJQGCRQfP+Ui5P+jRqy19aprERHILHEDdqDHnoTMzlvT0zJMzMzMzMzMzMzFsRMQU1FMy45OS41VVVVVVVVVVVVVVVVV'
+        };
+
+        // Initialize pages position
+        function initPages() {
+            cover.style.zIndex = '10';
+            pages.forEach((page, index) => {
+                page.style.zIndex = 9 - index;
+            });
+        }
+
+        function updateButtons() {
+            prevBtn.disabled = currentPage <= -1;
+            nextBtn.disabled = currentPage >= pages.length - 1;
+        }
+
+        function turnPage(direction) {
+            // Play page turning sound
+            const audio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEAQB8AAEAfAAABAAgAZGF0YQQA');
+            audio.play().catch(e => {});
+
+            if (direction === 'next') {
+                if (currentPage === -1) {
+                    // Turn cover
+                    cover.classList.add('page-turned');
+                    currentPage = 0;
+                } else if (currentPage < pages.length - 1) {
+                    // Turn page
+                    pages[currentPage].classList.add('page-turned');
+                    currentPage++;
+                }
+            } else if (direction === 'prev') {
+                if (currentPage === 0) {
+                    // Return to cover
+                    cover.classList.remove('page-turned');
+                    currentPage = -1;
+                } else if (currentPage > 0) {
+                    // Turn page back
+                    pages[currentPage - 1].classList.remove('page-turned');
+                    currentPage--;
+                }
+            }
+
+            updateButtons();
+            playCurrentPageAudio();
+        }
+
+        function playCurrentPageAudio() {
+            // Stop any currently playing audio
+            for (const key in audioPlayers) {
+                if (audioPlayers[key] && !audioPlayers[key].paused) {
+                    audioPlayers[key].pause();
+                    audioPlayers[key].currentTime = 0;
+                }
+            }
+
+            let audioId;
+            if (currentPage === -1) {
+                audioId = 'cover'; // You might want to add audio for the cover as well
+            } else if (currentPage >= 0 && currentPage < pages.length) {
+                audioId = `page${currentPage + 1}`;
+            }
+
+            if (audioSources[audioId]) {
+                if (!audioPlayers[audioId]) {
+                    audioPlayers[audioId] = new Audio(audioSources[audioId]);
+                }
+                audioPlayers[audioId].play().catch(e => console.error("Error playing audio:", e));
+            }
+        }
+
+        // Event listeners
+        nextBtn.addEventListener('click', () => turnPage('next'));
+        prevBtn.addEventListener('click', () => turnPage('prev'));
+
+        // Mobile touch swipe support
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            if (touchEndX < touchStartX - swipeThreshold) {
+                // Swipe left (next page)
+                if (!nextBtn.disabled) turnPage('next');
+            } else if (touchEndX > touchStartX + swipeThreshold) {
+                // Swipe right (previous page)
+                if (!prevBtn.disabled) turnPage('prev');
+            }
+        }
+
+        // Event listeners for audio buttons
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('audio-button') || event.target.closest('.audio-button')) {
+                const button = event.target.classList.contains('audio-button') ? event.target : event.target.closest('.audio-button');
+                const audioId = button.dataset.audio;
+                if (audioSources[audioId]) {
+                    if (!audioPlayers[audioId]) {
+                        audioPlayers[audioId] = new Audio(audioSources[audioId]);
+                    }
+                    if (audioPlayers[audioId].paused) {
+                        audioPlayers[audioId].play().catch(e => console.error("Error playing audio:", e));
+                        button.innerHTML = '<i class="fa-solid fa-pause"></i>';
+                    } else {
+                        audioPlayers[audioId].pause();
+                        button.innerHTML = '<i class="fa-solid fa-play"></i>';
+                    }
+                }
+            }
+        });
+
+        // Initialize
+        initPages();
+        updateButtons();
+        playCurrentPageAudio(); // Play audio for the initial view (cover or first page)
+
+    </script>
+</body>
+</html>
+
+    </script>
+</body>
+</html>
