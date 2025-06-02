@@ -86,6 +86,44 @@
         .service-option.selected .service-price {
             color: #f5f5f5;
         }
+        .barbers {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .barber-option {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .barber-option:hover {
+            border-color: #333;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .barber-option.selected {
+            background-color: #333;
+            color: white;
+            border-color: #333;
+        }
+        .barber-avatar {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        .barber-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .barber-experience {
+            color: #666;
+            font-size: 14px;
+        }
+        .barber-option.selected .barber-experience {
+            color: #f5f5f5;
+        }
         .calendar {
             margin-bottom: 20px;
         }
@@ -130,20 +168,50 @@
             color: #ccc;
             cursor: not-allowed;
         }
-        .time-slots {
+        .time-sections {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .time-section {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #fafafa;
+        }
+        .time-section.selected {
+            border-color: #333;
+            background-color: #f0f0f0;
+        }
+        .time-section-title {
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .time-section-subtitle {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .time-slots {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
         }
         .time-slot {
-            padding: 10px;
+            padding: 8px;
             text-align: center;
             border: 1px solid #ddd;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
         }
         .time-slot:hover {
-            background-color: #f0f0f0;
+            background-color: #e0e0e0;
         }
         .time-slot.selected {
             background-color: #333;
@@ -152,6 +220,7 @@
         .time-slot.disabled {
             color: #ccc;
             cursor: not-allowed;
+            background-color: #f9f9f9;
         }
         .summary {
             background-color: #f9f9f9;
@@ -182,6 +251,13 @@
         .btn:hover {
             background-color: #555;
         }
+        .btn-secondary {
+            background-color: #666;
+            margin-top: 10px;
+        }
+        .btn-secondary:hover {
+            background-color: #777;
+        }
         .hidden {
             display: none;
         }
@@ -199,6 +275,7 @@
             <p>Reserva tu turno en simples pasos</p>
         </header>
 
+        <!-- Step 1: Select Service -->
         <div class="step" id="step1">
             <div class="step-title">
                 <div class="step-number">1</div>
@@ -224,15 +301,47 @@
             </div>
         </div>
 
+        <!-- Step 2: Select Barber -->
         <div class="step hidden" id="step2">
             <div class="step-title">
                 <div class="step-number">2</div>
+                Selecciona tu barbero
+            </div>
+            <div class="barbers">
+                <div class="barber-option" onclick="selectBarber('carlos', 'Carlos Mendoza')">
+                    <div class="barber-avatar">👨‍🦲</div>
+                    <div class="barber-name">Carlos Mendoza</div>
+                    <div class="barber-experience">5 años de experiencia</div>
+                </div>
+                <div class="barber-option" onclick="selectBarber('miguel', 'Miguel Rodriguez')">
+                    <div class="barber-avatar">👨‍🦱</div>
+                    <div class="barber-name">Miguel Rodriguez</div>
+                    <div class="barber-experience">8 años de experiencia</div>
+                </div>
+                <div class="barber-option" onclick="selectBarber('jose', 'José García')">
+                    <div class="barber-avatar">👨‍🦳</div>
+                    <div class="barber-name">José García</div>
+                    <div class="barber-experience">12 años de experiencia</div>
+                </div>
+                <div class="barber-option" onclick="selectBarber('david', 'David López')">
+                    <div class="barber-avatar">👨</div>
+                    <div class="barber-name">David López</div>
+                    <div class="barber-experience">3 años de experiencia</div>
+                </div>
+            </div>
+            <button class="btn btn-secondary" onclick="goBack(1)">Volver</button>
+        </div>
+
+        <!-- Step 3: Select Date -->
+        <div class="step hidden" id="step3">
+            <div class="step-title">
+                <div class="step-number">3</div>
                 Selecciona una fecha
             </div>
             <div class="calendar">
                 <div class="calendar-header">
                     <div class="month-nav" onclick="changeMonth(-1)">&#9664; Anterior</div>
-                    <div class="current-month" id="currentMonth">Abril 2025</div>
+                    <div class="current-month" id="currentMonth">Junio 2025</div>
                     <div class="month-nav" onclick="changeMonth(1)">Siguiente &#9654;</div>
                 </div>
                 <div class="days-grid">
@@ -248,29 +357,62 @@
                     <!-- Days will be generated here -->
                 </div>
             </div>
-            <button class="btn" onclick="goBack(1)">Volver</button>
+            <button class="btn btn-secondary" onclick="goBack(2)">Volver</button>
         </div>
 
-        <div class="step hidden" id="step3">
-            <div class="step-title">
-                <div class="step-number">3</div>
-                Selecciona un horario
-            </div>
-            <div class="time-slots" id="time-slots">
-                <!-- Time slots will be generated here -->
-            </div>
-            <button class="btn" onclick="goBack(2)">Volver</button>
-        </div>
-
+        <!-- Step 4: Select Time and Schedule -->
         <div class="step hidden" id="step4">
             <div class="step-title">
                 <div class="step-number">4</div>
+                Horarios disponibles
+            </div>
+            <p style="text-align: center; margin-bottom: 20px; color: #666;">
+                <span id="selected-date-display">Fecha seleccionada</span>
+            </p>
+            
+            <div class="time-sections">
+                <div class="time-section" data-period="morning">
+                    <div class="time-section-title">MAÑANA</div>
+                    <div class="time-section-subtitle">Sin horas para reservar</div>
+                    <div class="time-slots" id="morning-slots">
+                        <!-- Morning slots will be generated here -->
+                    </div>
+                </div>
+                
+                <div class="time-section" data-period="afternoon">
+                    <div class="time-section-title">TARDE</div>
+                    <div class="time-section-subtitle">Sin horas para reservar</div>
+                    <div class="time-slots" id="afternoon-slots">
+                        <!-- Afternoon slots will be generated here -->
+                    </div>
+                </div>
+                
+                <div class="time-section" data-period="evening">
+                    <div class="time-section-title">NOCHE</div>
+                    <div class="time-section-subtitle">Sin horas para reservar</div>
+                    <div class="time-slots" id="evening-slots">
+                        <!-- Evening slots will be generated here -->
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn btn-secondary" onclick="goBack(3)">Volver</button>
+        </div>
+
+        <!-- Step 5: Confirmation -->
+        <div class="step hidden" id="step5">
+            <div class="step-title">
+                <div class="step-number">5</div>
                 Confirma tu reserva
             </div>
             <div class="summary">
                 <div class="summary-row">
                     <span class="summary-label">Servicio:</span>
                     <span id="summary-service">-</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Barbero:</span>
+                    <span id="summary-barber">-</span>
                 </div>
                 <div class="summary-row">
                     <span class="summary-label">Precio:</span>
@@ -286,15 +428,17 @@
                 </div>
             </div>
             <button class="btn" onclick="confirmBooking()">Confirmar Reserva</button>
-            <button class="btn" style="background-color: #666;" onclick="goBack(3)">Volver</button>
+            <button class="btn btn-secondary" onclick="goBack(4)">Volver</button>
         </div>
 
-        <div class="step hidden" id="step5">
+        <!-- Step 6: Success -->
+        <div class="step hidden" id="step6">
             <div style="text-align: center; padding: 40px 0;">
                 <div style="font-size: 50px; margin-bottom: 20px;">✅</div>
                 <h2>¡Reserva Confirmada!</h2>
                 <p>Te esperamos el <span id="confirmed-date">-</span> a las <span id="confirmed-time">-</span></p>
-                <p>Has reservado: <span id="confirmed-service">-</span></p>
+                <p>Con el barbero: <span id="confirmed-barber">-</span></p>
+                <p>Servicio: <span id="confirmed-service">-</span></p>
                 <button class="btn" onclick="startOver()">Hacer otra reserva</button>
             </div>
         </div>
@@ -306,6 +450,8 @@
         let selectedService = '';
         let selectedServiceName = '';
         let selectedServicePrice = '';
+        let selectedBarber = '';
+        let selectedBarberName = '';
         let selectedDate = '';
         let selectedTime = '';
         let currentMonth = new Date().getMonth();
@@ -399,6 +545,25 @@
             }, 300);
         }
 
+        // Select barber
+        function selectBarber(barberId, barberName) {
+            // Clear previous selection
+            document.querySelectorAll('.barber-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Mark as selected
+            event.currentTarget.classList.add('selected');
+            
+            selectedBarber = barberId;
+            selectedBarberName = barberName;
+            
+            // Move to next step
+            setTimeout(() => {
+                nextStep();
+            }, 300);
+        }
+
         // Select date
         function selectDate(day) {
             // Clear previous selection
@@ -415,6 +580,9 @@
             const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
             selectedDate = `${day} de ${monthNames[currentMonth]} de ${currentYear}`;
             
+            // Update the date display in the time selection step
+            document.getElementById('selected-date-display').textContent = selectedDate;
+            
             // Generate time slots
             generateTimeSlots();
             
@@ -424,40 +592,91 @@
             }, 300);
         }
 
-        // Generate time slots
+        // Generate time slots organized by periods
         function generateTimeSlots() {
-            const timeSlotsContainer = document.getElementById('time-slots');
-            timeSlotsContainer.innerHTML = '';
+            const morningContainer = document.getElementById('morning-slots');
+            const afternoonContainer = document.getElementById('afternoon-slots');
+            const eveningContainer = document.getElementById('evening-slots');
             
-            // Starting from 8:00 AM with 25 minute intervals
+            // Clear previous slots
+            morningContainer.innerHTML = '';
+            afternoonContainer.innerHTML = '';
+            eveningContainer.innerHTML = '';
+            
+            const timeSlots = {
+                morning: [],
+                afternoon: [],
+                evening: []
+            };
+            
+            // Generate time slots from 8:00 AM to 8:00 PM
             let hour = 8;
             let minute = 0;
             
-            // Generate time slots until 8:00 PM
             while (hour < 20) {
-                const timeSlot = document.createElement('div');
-                timeSlot.className = 'time-slot';
-                
-                // Format the time
                 const formattedHour = hour % 12 === 0 ? 12 : hour % 12;
                 const amPm = hour < 12 ? 'AM' : 'PM';
                 const formattedMinute = minute === 0 ? '00' : minute;
                 const timeText = `${formattedHour}:${formattedMinute} ${amPm}`;
                 
-                timeSlot.textContent = timeText;
+                // Categorize by time period
+                if (hour < 12) {
+                    timeSlots.morning.push(timeText);
+                } else if (hour < 18) {
+                    timeSlots.afternoon.push(timeText);
+                } else {
+                    timeSlots.evening.push(timeText);
+                }
                 
-                // Add event listener
-                timeSlot.addEventListener('click', () => selectTime(timeText));
-                
-                timeSlotsContainer.appendChild(timeSlot);
-                
-                // Increment by 25 minutes
-                minute += 25;
+                // Increment by 30 minutes
+                minute += 30;
                 if (minute >= 60) {
                     hour++;
                     minute = minute % 60;
                 }
             }
+            
+            // Create slot elements for each period
+            createTimeSlotElements(timeSlots.morning, morningContainer, 'morning');
+            createTimeSlotElements(timeSlots.afternoon, afternoonContainer, 'afternoon');
+            createTimeSlotElements(timeSlots.evening, eveningContainer, 'evening');
+            
+            // Update section subtitles
+            updateSectionSubtitles();
+        }
+        
+        function createTimeSlotElements(slots, container, period) {
+            const sectionElement = container.closest('.time-section');
+            
+            if (slots.length === 0) {
+                sectionElement.querySelector('.time-section-subtitle').textContent = 'Sin horas para reservar';
+                return;
+            }
+            
+            sectionElement.querySelector('.time-section-subtitle').textContent = `${slots.length} horas para reservar`;
+            
+            slots.forEach(timeText => {
+                const timeSlot = document.createElement('div');
+                timeSlot.className = 'time-slot';
+                timeSlot.textContent = timeText;
+                timeSlot.addEventListener('click', () => selectTime(timeText));
+                container.appendChild(timeSlot);
+            });
+        }
+        
+        function updateSectionSubtitles() {
+            const sections = ['morning', 'afternoon', 'evening'];
+            sections.forEach(section => {
+                const container = document.getElementById(`${section}-slots`);
+                const sectionElement = container.closest('.time-section');
+                const slots = container.children.length;
+                
+                if (slots > 0) {
+                    sectionElement.querySelector('.time-section-subtitle').textContent = `${slots} horas para reservar`;
+                } else {
+                    sectionElement.querySelector('.time-section-subtitle').textContent = 'Sin horas para reservar';
+                }
+            });
         }
 
         // Select time
@@ -474,6 +693,7 @@
             
             // Update summary
             document.getElementById('summary-service').textContent = selectedServiceName;
+            document.getElementById('summary-barber').textContent = selectedBarberName;
             document.getElementById('summary-price').textContent = selectedServicePrice;
             document.getElementById('summary-date').textContent = selectedDate;
             document.getElementById('summary-time').textContent = selectedTime;
@@ -500,9 +720,10 @@
 
         // Confirm booking
         function confirmBooking() {
-            // In a real app, you would send this data to the server
+            // Update confirmation display
             document.getElementById('confirmed-date').textContent = selectedDate;
             document.getElementById('confirmed-time').textContent = selectedTime;
+            document.getElementById('confirmed-barber').textContent = selectedBarberName;
             document.getElementById('confirmed-service').textContent = selectedServiceName;
             
             document.getElementById(`step${currentStep}`).classList.add('hidden');
@@ -516,14 +737,16 @@
             currentStep = 1;
             document.getElementById(`step${currentStep}`).classList.remove('hidden');
             
-            // Clear selections
-            document.querySelectorAll('.service-option').forEach(option => {
+            // Clear all selections
+            document.querySelectorAll('.service-option, .barber-option, .time-slot').forEach(option => {
                 option.classList.remove('selected');
             });
             
             selectedService = '';
             selectedServiceName = '';
             selectedServicePrice = '';
+            selectedBarber = '';
+            selectedBarberName = '';
             selectedDate = '';
             selectedTime = '';
             
