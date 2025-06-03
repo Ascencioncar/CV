@@ -110,8 +110,16 @@
             border-color: #333;
         }
         .barber-avatar {
-            font-size: 40px;
-            margin-bottom: 10px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            object-fit: cover;
+            border: 3px solid #ddd;
+            transition: border-color 0.3s;
+        }
+        .barber-option.selected .barber-avatar {
+            border-color: white;
         }
         .barber-name {
             font-weight: 600;
@@ -258,6 +266,35 @@
         .btn-secondary:hover {
             background-color: #777;
         }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #333;
+        }
+        .form-input.error {
+            border-color: #e74c3c;
+        }
+        .error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+        }
         .hidden {
             display: none;
         }
@@ -271,71 +308,102 @@
     <div class="container">
         <header>
             <div class="logo">✂️</div>
-            <h1>Barbería El Estilo</h1>
+            <h1>BARBER MOYAS</h1>
+            <h2>Dirección: Dg53B#14</h2>
             <p>Reserva tu turno en simples pasos</p>
         </header>
 
-        <!-- Step 1: Select Service -->
         <div class="step" id="step1">
             <div class="step-title">
                 <div class="step-number">1</div>
-                Selecciona un servicio
+                Información personal
             </div>
-            <div class="services">
-                <div class="service-option" onclick="selectService('corte', 'Corte de Cabello', '$15')">
-                    <div class="service-name">Corte de Cabello</div>
-                    <div class="service-price">$15 - 25min</div>
-                </div>
-                <div class="service-option" onclick="selectService('barba', 'Arreglo de Barba', '$10')">
-                    <div class="service-name">Arreglo de Barba</div>
-                    <div class="service-price">$10 - 25min</div>
-                </div>
-                <div class="service-option" onclick="selectService('combo', 'Corte + Barba', '$22')">
-                    <div class="service-name">Corte + Barba</div>
-                    <div class="service-price">$22 - 50min</div>
-                </div>
-                <div class="service-option" onclick="selectService('deluxe', 'Servicio Deluxe', '$30')">
-                    <div class="service-name">Servicio Deluxe</div>
-                    <div class="service-price">$30 - 50min</div>
-                </div>
+            <div class="form-group">
+                <label class="form-label" for="customerName">Nombre completo *</label>
+                <input type="text" id="customerName" class="form-input" placeholder="Ingresa tu nombre completo">
+                <div class="error-message" id="nameError"></div>
             </div>
+            <div class="form-group">
+                <label class="form-label" for="customerEmail">Correo electrónico *</label>
+                <input type="email" id="customerEmail" class="form-input" placeholder="ejemplo@correo.com">
+                <div class="error-message" id="emailError"></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="customerPhone">Número de teléfono *</label>
+                <input type="tel" id="customerPhone" class="form-input" placeholder="3001234567">
+                <div class="error-message" id="phoneError"></div>
+            </div>
+            <button class="btn" onclick="validateCustomerInfo()">Continuar</button>
         </div>
 
-        <!-- Step 2: Select Barber -->
         <div class="step hidden" id="step2">
             <div class="step-title">
                 <div class="step-number">2</div>
-                Selecciona tu barbero
+                Selecciona un servicio
             </div>
-            <div class="barbers">
-                <div class="barber-option" onclick="selectBarber('carlos', 'Carlos Mendoza')">
-                    <div class="barber-avatar">👨‍🦲</div>
-                    <div class="barber-name">Carlos Mendoza</div>
-                    <div class="barber-experience">5 años de experiencia</div>
+            <div class="services">
+                <div class="service-option" onclick="selectService('corte', 'Corte De Cabello', '$ 18.000')">
+                    <div class="service-name">Corte De Cabello</div>
+                    <div class="service-price">$ 18.000 - 30min</div>
+                    <div style="font-size: 12px; color: #666; margin-top: 5px;">Diseño de corte que incluye asesoría, lavado de cabello y peinado</div>
                 </div>
-                <div class="barber-option" onclick="selectBarber('miguel', 'Miguel Rodriguez')">
-                    <div class="barber-avatar">👨‍🦱</div>
-                    <div class="barber-name">Miguel Rodriguez</div>
-                    <div class="barber-experience">8 años de experiencia</div>
+                <div class="service-option" onclick="selectService('corte-barba', 'Corte De Cabello + Barba', '$ 25.000')">
+                    <div class="service-name">Corte De Cabello + Barba</div>
+                    <div class="service-price">$ 25.000 - 45min</div>
                 </div>
-                <div class="barber-option" onclick="selectBarber('jose', 'José García')">
-                    <div class="barber-avatar">👨‍🦳</div>
-                    <div class="barber-name">José García</div>
-                    <div class="barber-experience">12 años de experiencia</div>
+                <div class="service-option" onclick="selectService('marcada-patillas-barba', 'Marcada de patillas+barba', '$ 12.000')">
+                    <div class="service-name">Marcada de patillas+barba</div>
+                    <div class="service-price">$ 12.000 - 15min</div>
                 </div>
-                <div class="barber-option" onclick="selectBarber('david', 'David López')">
-                    <div class="barber-avatar">👨</div>
-                    <div class="barber-name">David López</div>
-                    <div class="barber-experience">3 años de experiencia</div>
+                <div class="service-option" onclick="selectService('marcada-patillas', 'Marcada de patillas', '$ 10.000')">
+                    <div class="service-name">Marcada de patillas</div>
+                    <div class="service-price">$ 10.000 - 5min</div>
+                    <div style="font-size: 12px; color: #666; margin-top: 5px;">Retoque de contornos perfilando patillas, frente y nuca</div>
+                </div>
+                <div class="service-option" onclick="selectService('depilacion-cejas', 'Depilación De Cejas', '$ 9.000')">
+                    <div class="service-name">Depilación De Cejas</div>
+                    <div class="service-price">$ 9.000 - 5min</div>
+                </div>
+                <div class="service-option" onclick="selectService('rayitos', 'Rayitos', '$ 60.000')">
+                    <div class="service-name">RAYITOS</div>
+                    <div class="service-price">$ 60.000 - 150min</div>
+                </div>
+                <div class="service-option" onclick="selectService('diseno-barba-pigmentacion', 'Diseño De Barba Con Pigmentación', '$ 14.000')">
+                    <div class="service-name">DISEÑO DE BARBA CON PIGMENTACIÓN</div>
+                    <div class="service-price">$ 14.000 - 20min</div>
+                </div>
+                <div class="service-option" onclick="selectService('decoloracion', 'Decoloración', '$ 90.000')">
+                    <div class="service-name">DECOLORACIÓN</div>
+                    <div class="service-price">$ 90.000 - 160min</div>
                 </div>
             </div>
             <button class="btn btn-secondary" onclick="goBack(1)">Volver</button>
         </div>
 
-        <!-- Step 3: Select Date -->
         <div class="step hidden" id="step3">
             <div class="step-title">
                 <div class="step-number">3</div>
+                Selecciona tu barbero
+            </div>
+            <div class="barbers">
+                <div class="barber-option" onclick="selectBarber('Juan pablo', 'Juan pablo')">
+                    <img src="Assets/Barberia/Pablo.jpg" alt="Juan pablo" class="barber-avatar">
+                    <div class="barber-name">Juan pablo</div>
+                    <div class="barber-experience"></div>
+                </div>
+                <div class="barber-option" onclick="selectBarber('Juan David', 'Juan David')">
+                    <img src="Assets/Barberia/JuanDavid.jpg" alt="Juan David" class="barber-avatar">
+                    <div class="barber-name">Juan David</div>
+                    <div class="barber-experience"></div>
+                </div>
+              
+            </div>
+            <button class="btn btn-secondary" onclick="goBack(2)">Volver</button>
+        </div>
+
+        <div class="step hidden" id="step4">
+            <div class="step-title">
+                <div class="step-number">4</div>
                 Selecciona una fecha
             </div>
             <div class="calendar">
@@ -354,16 +422,14 @@
                     <div class="day-name">Sa</div>
                 </div>
                 <div class="days-grid" id="calendar-days">
-                    <!-- Days will be generated here -->
-                </div>
+                    </div>
             </div>
-            <button class="btn btn-secondary" onclick="goBack(2)">Volver</button>
+            <button class="btn btn-secondary" onclick="goBack(3)">Volver</button>
         </div>
 
-        <!-- Step 4: Select Time and Schedule -->
-        <div class="step hidden" id="step4">
+        <div class="step hidden" id="step5">
             <div class="step-title">
-                <div class="step-number">4</div>
+                <div class="step-number">5</div>
                 Horarios disponibles
             </div>
             <p style="text-align: center; margin-bottom: 20px; color: #666;">
@@ -375,37 +441,45 @@
                     <div class="time-section-title">MAÑANA</div>
                     <div class="time-section-subtitle">Sin horas para reservar</div>
                     <div class="time-slots" id="morning-slots">
-                        <!-- Morning slots will be generated here -->
-                    </div>
+                        </div>
                 </div>
                 
                 <div class="time-section" data-period="afternoon">
                     <div class="time-section-title">TARDE</div>
                     <div class="time-section-subtitle">Sin horas para reservar</div>
                     <div class="time-slots" id="afternoon-slots">
-                        <!-- Afternoon slots will be generated here -->
-                    </div>
+                        </div>
                 </div>
                 
                 <div class="time-section" data-period="evening">
                     <div class="time-section-title">NOCHE</div>
                     <div class="time-section-subtitle">Sin horas para reservar</div>
                     <div class="time-slots" id="evening-slots">
-                        <!-- Evening slots will be generated here -->
-                    </div>
+                        </div>
                 </div>
             </div>
             
-            <button class="btn btn-secondary" onclick="goBack(3)">Volver</button>
+            <button class="btn btn-secondary" onclick="goBack(4)">Volver</button>
         </div>
 
-        <!-- Step 5: Confirmation -->
-        <div class="step hidden" id="step5">
+        <div class="step hidden" id="step6">
             <div class="step-title">
-                <div class="step-number">5</div>
+                <div class="step-number">6</div>
                 Confirma tu reserva
             </div>
             <div class="summary">
+                <div class="summary-row">
+                    <span class="summary-label">Cliente:</span>
+                    <span id="summary-customer">-</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Email:</span>
+                    <span id="summary-email">-</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Teléfono:</span>
+                    <span id="summary-phone">-</span>
+                </div>
                 <div class="summary-row">
                     <span class="summary-label">Servicio:</span>
                     <span id="summary-service">-</span>
@@ -428,335 +502,438 @@
                 </div>
             </div>
             <button class="btn" onclick="confirmBooking()">Confirmar Reserva</button>
-            <button class="btn btn-secondary" onclick="goBack(4)">Volver</button>
+            <button class="btn btn-secondary" onclick="goBack(5)">Volver</button>
         </div>
 
-        <!-- Step 6: Success -->
-        <div class="step hidden" id="step6">
+        <div class="step hidden" id="step7">
             <div style="text-align: center; padding: 40px 0;">
                 <div style="font-size: 50px; margin-bottom: 20px;">✅</div>
                 <h2>¡Reserva Confirmada!</h2>
+                <p><strong><span id="confirmed-customer">-</span></strong></p>
                 <p>Te esperamos el <span id="confirmed-date">-</span> a las <span id="confirmed-time">-</span></p>
                 <p>Con el barbero: <span id="confirmed-barber">-</span></p>
                 <p>Servicio: <span id="confirmed-service">-</span></p>
+                <p>Te enviaremos la confirmación a: <span id="confirmed-email">-</span></p>
                 <button class="btn" onclick="startOver()">Hacer otra reserva</button>
             </div>
         </div>
     </div>
-
     <script>
-        // Globals
-        let currentStep = 1;
-        let selectedService = '';
-        let selectedServiceName = '';
-        let selectedServicePrice = '';
-        let selectedBarber = '';
-        let selectedBarberName = '';
-        let selectedDate = '';
-        let selectedTime = '';
-        let currentMonth = new Date().getMonth();
-        let currentYear = new Date().getFullYear();
+       // Globals
+let currentStep = 1;
+let customerName = '';
+let customerEmail = '';
+let customerPhone = '';
+let selectedService = '';
+let selectedServiceName = '';
+let selectedServicePrice = '';
+let selectedBarber = '';
+let selectedBarberName = '';
+let selectedDate = '';
+let selectedTime = '';
+let currentMonth = new Date().getMonth();
+let currentYear = new Date().getFullYear();
 
-        // Initialize calendar
-        function initCalendar() {
-            const today = new Date();
-            currentMonth = today.getMonth();
-            currentYear = today.getFullYear();
-            renderCalendar();
+// Function to navigate between steps
+function showStep(stepNum) {
+    document.querySelectorAll('.step').forEach((stepElement, index) => {
+        if (index + 1 === stepNum) {
+            stepElement.classList.remove('hidden');
+        } else {
+            stepElement.classList.add('hidden');
         }
+    });
+    currentStep = stepNum;
 
-        // Render calendar days
-        function renderCalendar() {
-            const daysContainer = document.getElementById('calendar-days');
-            daysContainer.innerHTML = '';
-            
-            const firstDay = new Date(currentYear, currentMonth, 1);
-            const lastDay = new Date(currentYear, currentMonth + 1, 0);
-            const prevMonthLastDay = new Date(currentYear, currentMonth, 0);
-            
-            document.getElementById('currentMonth').textContent = new Date(currentYear, currentMonth).toLocaleDateString('es', { month: 'long', year: 'numeric' });
-            
-            // Add empty cells for days before the first day of the month
-            for (let i = 0; i < firstDay.getDay(); i++) {
-                const dayElement = document.createElement('div');
-                dayElement.className = 'day disabled';
-                dayElement.textContent = prevMonthLastDay.getDate() - (firstDay.getDay() - i - 1);
-                daysContainer.appendChild(dayElement);
-            }
-            
-            // Add days of the current month
-            const today = new Date();
-            for (let i = 1; i <= lastDay.getDate(); i++) {
-                const dayElement = document.createElement('div');
-                dayElement.className = 'day';
-                dayElement.textContent = i;
-                
-                // Disable past dates
-                const thisDate = new Date(currentYear, currentMonth, i);
-                if (thisDate < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
-                    dayElement.className = 'day disabled';
-                } else {
-                    dayElement.addEventListener('click', () => selectDate(i));
-                }
-                
-                daysContainer.appendChild(dayElement);
-            }
-            
-            // Add empty cells for days after the last day of the month
-            const remainingCells = 42 - (firstDay.getDay() + lastDay.getDate());
-            for (let i = 1; i <= remainingCells; i++) {
-                const dayElement = document.createElement('div');
-                dayElement.className = 'day disabled';
-                dayElement.textContent = i;
-                daysContainer.appendChild(dayElement);
-            }
-        }
+    // Special handling for calendar on step 4
+    if (currentStep === 4) {
+        const today = new Date();
+        currentMonth = today.getMonth();
+        currentYear = today.getFullYear();
+        renderCalendar();
+    }
+}
 
-        // Change month
-        function changeMonth(direction) {
-            currentMonth += direction;
-            if (currentMonth < 0) {
-                currentMonth = 11;
-                currentYear--;
-            } else if (currentMonth > 11) {
-                currentMonth = 0;
-                currentYear++;
-            }
-            renderCalendar();
-        }
+// Move to the next step
+function nextStep() {
+    // Before moving to the next step, update the summary if it's step 6
+    if (currentStep === 5) { // If moving from time selection to confirmation
+        updateSummary();
+    }
+    showStep(currentStep + 1);
+}
 
-        // Select service
-        function selectService(service, name, price) {
-            // Clear previous selection
-            document.querySelectorAll('.service-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-            
-            // Mark as selected
-            event.currentTarget.classList.add('selected');
-            
-            selectedService = service;
-            selectedServiceName = name;
-            selectedServicePrice = price;
-            
-            // Move to next step
-            setTimeout(() => {
-                nextStep();
-            }, 300);
-        }
+// Go back to a previous step
+function goBack(stepNum) {
+    showStep(stepNum);
+}
 
-        // Select barber
-        function selectBarber(barberId, barberName) {
-            // Clear previous selection
-            document.querySelectorAll('.barber-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-            
-            // Mark as selected
-            event.currentTarget.classList.add('selected');
-            
-            selectedBarber = barberId;
-            selectedBarberName = barberName;
-            
-            // Move to next step
-            setTimeout(() => {
-                nextStep();
-            }, 300);
-        }
+// Validate customer information
+function validateCustomerInfo() {
+    const name = document.getElementById('customerName').value.trim();
+    const email = document.getElementById('customerEmail').value.trim();
+    const phone = document.getElementById('customerPhone').value.trim();
+    
+    let isValid = true;
+    
+    // Clear previous errors
+    document.getElementById('nameError').textContent = '';
+    document.getElementById('emailError').textContent = '';
+    document.getElementById('phoneError').textContent = '';
+    
+    document.getElementById('customerName').classList.remove('error');
+    document.getElementById('customerEmail').classList.remove('error');
+    document.getElementById('customerPhone').classList.remove('error');
+    
+    // Validate name
+    if (!name) {
+        document.getElementById('nameError').textContent = 'El nombre es obligatorio';
+        document.getElementById('customerName').classList.add('error');
+        isValid = false;
+    } else if (name.length < 2) {
+        document.getElementById('nameError').textContent = 'El nombre debe tener al menos 2 caracteres';
+        document.getElementById('customerName').classList.add('error');
+        isValid = false;
+    }
+    
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) {
+        document.getElementById('emailError').textContent = 'El correo electrónico es obligatorio';
+        document.getElementById('customerEmail').classList.add('error');
+        isValid = false;
+    } else if (!emailRegex.test(email)) {
+        document.getElementById('emailError').textContent = 'Por favor ingresa un correo electrónico válido';
+        document.getElementById('customerEmail').classList.add('error');
+        isValid = false;
+    }
+    
+    // Validate phone
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phone) {
+        document.getElementById('phoneError').textContent = 'El número de teléfono es obligatorio';
+        document.getElementById('customerPhone').classList.add('error');
+        isValid = false;
+    } else if (!phoneRegex.test(phone)) {
+        document.getElementById('phoneError').textContent = 'Por favor ingresa un número de teléfono válido (10 dígitos)';
+        document.getElementById('customerPhone').classList.add('error');
+        isValid = false;
+    }
+    
+    if (isValid) {
+        customerName = name;
+        customerEmail = email;
+        customerPhone = phone;
+        nextStep();
+    }
+}
 
-        // Select date
-        function selectDate(day) {
-            // Clear previous selection
-            document.querySelectorAll('.day').forEach(dayElem => {
-                if (!dayElem.classList.contains('disabled')) {
-                    dayElem.classList.remove('selected');
-                }
-            });
-            
-            // Mark as selected
-            event.currentTarget.classList.add('selected');
-            
-            // Format the date
-            const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-            selectedDate = `${day} de ${monthNames[currentMonth]} de ${currentYear}`;
-            
-            // Update the date display in the time selection step
-            document.getElementById('selected-date-display').textContent = selectedDate;
-            
-            // Generate time slots
-            generateTimeSlots();
-            
-            // Move to next step
-            setTimeout(() => {
-                nextStep();
-            }, 300);
-        }
-
-        // Generate time slots organized by periods
-        function generateTimeSlots() {
-            const morningContainer = document.getElementById('morning-slots');
-            const afternoonContainer = document.getElementById('afternoon-slots');
-            const eveningContainer = document.getElementById('evening-slots');
-            
-            // Clear previous slots
-            morningContainer.innerHTML = '';
-            afternoonContainer.innerHTML = '';
-            eveningContainer.innerHTML = '';
-            
-            const timeSlots = {
-                morning: [],
-                afternoon: [],
-                evening: []
-            };
-            
-            // Generate time slots from 8:00 AM to 8:00 PM
-            let hour = 8;
-            let minute = 0;
-            
-            while (hour < 20) {
-                const formattedHour = hour % 12 === 0 ? 12 : hour % 12;
-                const amPm = hour < 12 ? 'AM' : 'PM';
-                const formattedMinute = minute === 0 ? '00' : minute;
-                const timeText = `${formattedHour}:${formattedMinute} ${amPm}`;
-                
-                // Categorize by time period
-                if (hour < 12) {
-                    timeSlots.morning.push(timeText);
-                } else if (hour < 18) {
-                    timeSlots.afternoon.push(timeText);
-                } else {
-                    timeSlots.evening.push(timeText);
-                }
-                
-                // Increment by 30 minutes
-                minute += 30;
-                if (minute >= 60) {
-                    hour++;
-                    minute = minute % 60;
-                }
-            }
-            
-            // Create slot elements for each period
-            createTimeSlotElements(timeSlots.morning, morningContainer, 'morning');
-            createTimeSlotElements(timeSlots.afternoon, afternoonContainer, 'afternoon');
-            createTimeSlotElements(timeSlots.evening, eveningContainer, 'evening');
-            
-            // Update section subtitles
-            updateSectionSubtitles();
+// Render calendar days
+function renderCalendar() {
+    const daysContainer = document.getElementById('calendar-days');
+    daysContainer.innerHTML = '';
+    
+    const firstDay = new Date(currentYear, currentMonth, 1);
+    const lastDay = new Date(currentYear, currentMonth + 1, 0);
+    const prevMonthLastDay = new Date(currentYear, currentMonth, 0);
+    
+    document.getElementById('currentMonth').textContent = new Date(currentYear, currentMonth).toLocaleDateString('es', { month: 'long', year: 'numeric' });
+    
+    // Add empty cells for days before the first day of the month
+    for (let i = 0; i < firstDay.getDay(); i++) {
+        const dayElement = document.createElement('div');
+        dayElement.className = 'day disabled';
+        // Display a day from the previous month for visual continuity, adjusted for display
+        dayElement.textContent = prevMonthLastDay.getDate() - (firstDay.getDay() - i - 1); 
+        daysContainer.appendChild(dayElement);
+    }
+    
+    // Add days of the current month
+    const today = new Date();
+    for (let i = 1; i <= lastDay.getDate(); i++) {
+        const dayElement = document.createElement('div');
+        dayElement.className = 'day';
+        dayElement.textContent = i;
+        
+        // Disable past dates
+        const thisDate = new Date(currentYear, currentMonth, i);
+        if (thisDate < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
+            dayElement.classList.add('disabled');
+            // Remove click listener for disabled days
+        } else {
+            dayElement.addEventListener('click', () => selectDate(i));
         }
         
-        function createTimeSlotElements(slots, container, period) {
-            const sectionElement = container.closest('.time-section');
-            
-            if (slots.length === 0) {
-                sectionElement.querySelector('.time-section-subtitle').textContent = 'Sin horas para reservar';
-                return;
-            }
-            
-            sectionElement.querySelector('.time-section-subtitle').textContent = `${slots.length} horas para reservar`;
-            
-            slots.forEach(timeText => {
-                const timeSlot = document.createElement('div');
-                timeSlot.className = 'time-slot';
-                timeSlot.textContent = timeText;
-                timeSlot.addEventListener('click', () => selectTime(timeText));
-                container.appendChild(timeSlot);
-            });
+        daysContainer.appendChild(dayElement);
+    }
+    
+    // Add empty cells for days after the last day of the month to fill the grid (max 6 weeks)
+    const totalDaysDisplayed = firstDay.getDay() + lastDay.getDate();
+    const remainingCells = 42 - totalDaysDisplayed; // 6 rows * 7 days/row = 42 cells
+    for (let i = 1; i <= remainingCells; i++) {
+        const dayElement = document.createElement('div');
+        dayElement.className = 'day disabled';
+        dayElement.textContent = i;
+        daysContainer.appendChild(dayElement);
+    }
+}
+
+// Change month in calendar
+function changeMonth(direction) {
+    currentMonth += direction;
+    if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+    } else if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+    }
+    renderCalendar();
+}
+
+// Select service
+function selectService(service, name, price) {
+    // Clear previous selection
+    document.querySelectorAll('.service-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    
+    // Mark as selected
+    event.currentTarget.classList.add('selected');
+    
+    selectedService = service;
+    selectedServiceName = name;
+    selectedServicePrice = price;
+    
+    // Move to next step
+    setTimeout(() => {
+        nextStep();
+    }, 300);
+}
+
+// Select barber
+function selectBarber(barberId, barberName) {
+    // Clear previous selection
+    document.querySelectorAll('.barber-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    
+    // Mark as selected
+    event.currentTarget.classList.add('selected');
+    
+    selectedBarber = barberId;
+    selectedBarberName = barberName;
+    
+    // Move to next step
+    setTimeout(() => {
+        nextStep();
+    }, 300);
+}
+
+// Select date
+function selectDate(day) {
+    // Clear previous selection
+    document.querySelectorAll('.day').forEach(dayElem => {
+        if (!dayElem.classList.contains('disabled')) {
+            dayElem.classList.remove('selected');
+        }
+    });
+    
+    // Mark as selected
+    event.currentTarget.classList.add('selected');
+    
+    // Format the date
+    const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    selectedDate = `${day} de ${monthNames[currentMonth]} de ${currentYear}`;
+    
+    // Update the date display in the time selection step
+    document.getElementById('selected-date-display').textContent = selectedDate;
+    
+    // Generate time slots
+    generateTimeSlots();
+    
+    // Move to next step
+    setTimeout(() => {
+        nextStep();
+    }, 300);
+}
+
+// Generate time slots organized by periods
+function generateTimeSlots() {
+    const morningContainer = document.getElementById('morning-slots');
+    const afternoonContainer = document.getElementById('afternoon-slots');
+    const eveningContainer = document.getElementById('evening-slots');
+    
+    // Clear previous slots
+    morningContainer.innerHTML = '';
+    afternoonContainer.innerHTML = '';
+    eveningContainer.innerHTML = '';
+    
+    const timeSlots = {
+        morning: [],
+        afternoon: [],
+        evening: []
+    };
+    
+    // Generate time slots from 8:00 AM to 8:00 PM (20:00)
+    let hour = 8;
+    let minute = 0;
+    
+    while (hour < 20) {
+        const formattedHour = hour % 12 === 0 ? 12 : hour % 12;
+        const amPm = hour < 12 ? 'AM' : 'PM';
+        const formattedMinute = minute === 0 ? '00' : minute;
+        const timeText = `${formattedHour}:${formattedMinute} ${amPm}`;
+        
+        // Categorize by time period
+        if (hour < 12) {
+            timeSlots.morning.push(timeText);
+        } else if (hour < 18) {
+            timeSlots.afternoon.push(timeText);
+        } else {
+            timeSlots.evening.push(timeText);
         }
         
-        function updateSectionSubtitles() {
-            const sections = ['morning', 'afternoon', 'evening'];
-            sections.forEach(section => {
-                const container = document.getElementById(`${section}-slots`);
-                const sectionElement = container.closest('.time-section');
-                const slots = container.children.length;
-                
-                if (slots > 0) {
-                    sectionElement.querySelector('.time-section-subtitle').textContent = `${slots} horas para reservar`;
-                } else {
-                    sectionElement.querySelector('.time-section-subtitle').textContent = 'Sin horas para reservar';
-                }
-            });
+        // Increment by 30 minutes
+        minute += 30;
+        if (minute >= 60) {
+            hour++;
+            minute = minute % 60;
         }
+    }
+    
+    // Create slot elements for each period
+    createTimeSlotElements(timeSlots.morning, morningContainer, 'morning');
+    createTimeSlotElements(timeSlots.afternoon, afternoonContainer, 'afternoon');
+    createTimeSlotElements(timeSlots.evening, eveningContainer, 'evening');
+    
+    // Update section subtitles
+    updateSectionSubtitles();
+}
 
-        // Select time
-        function selectTime(time) {
-            // Clear previous selection
-            document.querySelectorAll('.time-slot').forEach(slot => {
-                slot.classList.remove('selected');
-            });
-            
-            // Mark as selected
-            event.currentTarget.classList.add('selected');
-            
-            selectedTime = time;
-            
-            // Update summary
-            document.getElementById('summary-service').textContent = selectedServiceName;
-            document.getElementById('summary-barber').textContent = selectedBarberName;
-            document.getElementById('summary-price').textContent = selectedServicePrice;
-            document.getElementById('summary-date').textContent = selectedDate;
-            document.getElementById('summary-time').textContent = selectedTime;
-            
-            // Move to next step
-            setTimeout(() => {
-                nextStep();
-            }, 300);
+function createTimeSlotElements(slots, container, period) {
+    const sectionElement = container.closest('.time-section');
+    
+    if (slots.length === 0) {
+        sectionElement.querySelector('.time-section-subtitle').textContent = 'Sin horas para reservar';
+        return;
+    }
+    
+    // Clear the "Sin horas para reservar" message if there are slots
+    sectionElement.querySelector('.time-section-subtitle').textContent = '';
+
+    slots.forEach(slot => {
+        const slotElement = document.createElement('div');
+        slotElement.className = 'time-slot';
+        slotElement.textContent = slot;
+        slotElement.addEventListener('click', () => selectTime(slot));
+        container.appendChild(slotElement);
+    });
+}
+
+function updateSectionSubtitles() {
+    document.querySelectorAll('.time-section').forEach(section => {
+        const slotsContainer = section.querySelector('.time-slots');
+        const subtitle = section.querySelector('.time-section-subtitle');
+        if (slotsContainer.children.length === 0) {
+            subtitle.textContent = 'Sin horas para reservar';
+        } else {
+            subtitle.textContent = ''; // Clear if there are slots
         }
+    });
+}
 
-        // Next step
-        function nextStep() {
-            document.getElementById(`step${currentStep}`).classList.add('hidden');
-            currentStep++;
-            document.getElementById(`step${currentStep}`).classList.remove('hidden');
-        }
+// Select time
+function selectTime(time) {
+    // Clear previous selection across all time sections
+    document.querySelectorAll('.time-slot').forEach(slot => {
+        slot.classList.remove('selected');
+    });
+    
+    // Mark as selected
+    event.currentTarget.classList.add('selected');
+    
+    selectedTime = time;
+    
+    // Move to next step (confirmation)
+    setTimeout(() => {
+        nextStep();
+    }, 300);
+}
 
-        // Go back
-        function goBack(step) {
-            document.getElementById(`step${currentStep}`).classList.add('hidden');
-            currentStep = step;
-            document.getElementById(`step${currentStep}`).classList.remove('hidden');
-        }
+// Update summary on confirmation step
+function updateSummary() {
+    document.getElementById('summary-customer').textContent = customerName;
+    document.getElementById('summary-email').textContent = customerEmail;
+    document.getElementById('summary-phone').textContent = customerPhone;
+    document.getElementById('summary-service').textContent = selectedServiceName;
+    document.getElementById('summary-barber').textContent = selectedBarberName;
+    document.getElementById('summary-price').textContent = selectedServicePrice;
+    document.getElementById('summary-date').textContent = selectedDate;
+    document.getElementById('summary-time').textContent = selectedTime;
+}
 
-        // Confirm booking
-        function confirmBooking() {
-            // Update confirmation display
-            document.getElementById('confirmed-date').textContent = selectedDate;
-            document.getElementById('confirmed-time').textContent = selectedTime;
-            document.getElementById('confirmed-barber').textContent = selectedBarberName;
-            document.getElementById('confirmed-service').textContent = selectedServiceName;
-            
-            document.getElementById(`step${currentStep}`).classList.add('hidden');
-            currentStep++;
-            document.getElementById(`step${currentStep}`).classList.remove('hidden');
-        }
+// Confirm booking and show success message
+function confirmBooking() {
+    // Update confirmation display
+    document.getElementById('confirmed-customer').textContent = customerName;
+    document.getElementById('confirmed-email').textContent = customerEmail;
+    document.getElementById('confirmed-date').textContent = selectedDate;
+    document.getElementById('confirmed-time').textContent = selectedTime;
+    document.getElementById('confirmed-barber').textContent = selectedBarberName;
+    document.getElementById('confirmed-service').textContent = selectedServiceName;
 
-        // Start over
-        function startOver() {
-            document.getElementById(`step${currentStep}`).classList.add('hidden');
-            currentStep = 1;
-            document.getElementById(`step${currentStep}`).classList.remove('hidden');
-            
-            // Clear all selections
-            document.querySelectorAll('.service-option, .barber-option, .time-slot').forEach(option => {
-                option.classList.remove('selected');
-            });
-            
-            selectedService = '';
-            selectedServiceName = '';
-            selectedServicePrice = '';
-            selectedBarber = '';
-            selectedBarberName = '';
-            selectedDate = '';
-            selectedTime = '';
-            
-            initCalendar();
-        }
+    // Simulate sending data to a backend (e.g., API call)
+    console.log('Booking Confirmed:', {
+        customerName,
+        customerEmail,
+        customerPhone,
+        selectedService,
+        selectedBarber,
+        selectedDate,
+        selectedTime
+    });
 
-        // Initialize
-        window.onload = function() {
-            initCalendar();
-        };
+    // Move to success step
+    nextStep();
+}
+
+// Start over the booking process
+function startOver() {
+    // Reset all global variables
+    currentStep = 1;
+    customerName = '';
+    customerEmail = '';
+    customerPhone = '';
+    selectedService = '';
+    selectedServiceName = '';
+    selectedServicePrice = '';
+    selectedBarber = '';
+    selectedBarberName = '';
+    selectedDate = '';
+    selectedTime = '';
+    currentMonth = new Date().getMonth();
+    currentYear = new Date().getFullYear();
+
+    // Clear form inputs
+    document.getElementById('customerName').value = '';
+    document.getElementById('customerEmail').value = '';
+    document.getElementById('customerPhone').value = '';
+
+    // Clear selections
+    document.querySelectorAll('.service-option').forEach(option => option.classList.remove('selected'));
+    document.querySelectorAll('.barber-option').forEach(option => option.classList.remove('selected'));
+    document.querySelectorAll('.day').forEach(dayElem => dayElem.classList.remove('selected'));
+    document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('selected'));
+
+    // Go back to the first step
+    showStep(1);
+}
+
+// Initialize the first step when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    showStep(1);
+});
     </script>
 </body>
 </html>
