@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>¡Feliz Cumpleaños!</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pink: #ff4d8d;
+      --yellow: #ffe042;
+      --cyan: #00e5ff;
+      --purple: #b04aff;
+      --bg: #0d0014;
+    }
+
+    body {
+      background: var(--bg);
+      font-family: 'Nunito', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Stars */
+    .stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .star {
+      position: absolute;
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: #fff;
+      animation: twinkle 2s infinite alternate;
+    }
+
+    @keyframes twinkle {
+      from { opacity: 0.2; transform: scale(1); }
+      to   { opacity: 1;   transform: scale(1.5); }
+    }
+
+    /* Confetti */
+    .confetti-piece {
+      position: fixed;
+      width: 10px; height: 16px;
+      top: -20px;
+      border-radius: 2px;
+      opacity: 0.9;
+      animation: fall linear infinite;
+      z-index: 1;
+    }
+    @keyframes fall {
+      0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* Main card */
+    .card {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 3rem 3.5rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 32px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 0 60px rgba(176, 74, 255, 0.3), 0 0 120px rgba(255, 77, 141, 0.15);
+      max-width: 520px;
+      width: 90%;
+      animation: popIn 0.8s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.5) translateY(40px); opacity: 0; }
+      to   { transform: scale(1) translateY(0);      opacity: 1; }
+    }
+
+    .emoji-row {
+      font-size: 2.8rem;
+      letter-spacing: 0.2em;
+      margin-bottom: 1rem;
+      animation: bounce 1.5s ease-in-out infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-10px); }
+    }
+
+    h1 {
+      font-family: 'Pacifico', cursive;
+      font-size: clamp(2.2rem, 7vw, 3.8rem);
+      background: linear-gradient(135deg, var(--pink), var(--yellow), var(--cyan), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.2;
+      text-shadow: none;
+      margin-bottom: 0.3rem;
+      animation: shimmer 3s linear infinite;
+      background-size: 300% 300%;
+    }
+    @keyframes shimmer {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .subtitle {
+      color: rgba(255,255,255,0.65);
+      font-size: 1rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+    }
+
+    /* Cake */
+    .cake {
+      font-size: 5rem;
+      display: block;
+      margin: 0 auto 1.8rem;
+      filter: drop-shadow(0 0 20px var(--yellow));
+      animation: wiggle 3s ease-in-out infinite;
+    }
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-5deg) scale(1); }
+      50%       { transform: rotate(5deg) scale(1.08); }
+    }
+
+    .message {
+      color: rgba(255,255,255,0.85);
+      font-size: 1.05rem;
+      line-height: 1.7;
+      margin-bottom: 2rem;
+    }
+    .message span {
+      color: var(--yellow);
+      font-weight: 700;
+    }
+
+    /* Button */
+    .btn {
+      display: inline-block;
+      padding: 0.8rem 2.4rem;
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      color: #fff;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 24px rgba(255, 77, 141, 0.5);
+    }
+    .btn:hover {
+      transform: scale(1.07);
+      box-shadow: 0 6px 36px rgba(255, 77, 141, 0.7);
+    }
+
+    /* Floating hearts */
+    .heart {
+      position: fixed;
+      font-size: 1.4rem;
+      pointer-events: none;
+      animation: floatUp 4s ease-in forwards;
+      z-index: 5;
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-80vh) scale(0.5); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="stars" id="stars"></div>
+
+  <div class="card">
+    <div class="emoji-row">🎉 🎊 🎈</div>
+    <h1>¡Feliz Cumpleaños!</h1>
+    <p class="subtitle">Que este día sea especial para ti manita <3 </p>
+    <span class="cake">🎂</span>
+    <p class="message">
+      Hoy es un día <span>muy especial</span> porque el mundo celebra
+      que existes. Gracias a pipe que tiene la paciencia para <span>cuidarte</span>. ✨
+    </p>
+    <button class="btn" onclick="boom()">🎆 ¡Tussy!</button>
+  </div>
+
+  <script>
+    // Stars
+    const starsEl = document.getElementById('stars');
+    for (let i = 0; i < 120; i++) {
+      const s = document.createElement('div');
+      s.className = 'star';
+      s.style.cssText = `
+        left:${Math.random()*100}%;
+        top:${Math.random()*100}%;
+        animation-delay:${Math.random()*3}s;
+        animation-duration:${1.5+Math.random()*2}s;
+        width:${Math.random()>0.8?4:2}px;
+        height:${Math.random()>0.8?4:2}px;
+      `;
+      starsEl.appendChild(s);
+    }
+
+    // Confetti
+    const colors = ['#ff4d8d','#ffe042','#00e5ff','#b04aff','#ff7c4d','#4dffb4'];
+    function spawnConfetti(n = 40) {
+      for (let i = 0; i < n; i++) {
+        const c = document.createElement('div');
+        c.className = 'confetti-piece';
+        c.style.cssText = `
+          left:${Math.random()*100}%;
+          background:${colors[Math.floor(Math.random()*colors.length)]};
+          animation-duration:${2.5+Math.random()*3}s;
+          animation-delay:${Math.random()*2}s;
+          transform:rotate(${Math.random()*360}deg);
+        `;
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 6000);
+      }
+    }
+    spawnConfetti(50);
+
+    // Floating hearts on click/button
+    function spawnHearts(x, y) {
+      const emojis = ['❤️','💜','💛','💙','💗','⭐','✨'];
+      for (let i = 0; i < 8; i++) {
+        const h = document.createElement('div');
+        h.className = 'heart';
+        h.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+        h.style.cssText = `
+          left:${x + (Math.random()-0.5)*100}px;
+          top:${y}px;
+          animation-delay:${Math.random()*0.4}s;
+        `;
+        document.body.appendChild(h);
+        setTimeout(() => h.remove(), 4500);
+      }
+    }
+
+    function boom() {
+      spawnConfetti(80);
+      const btn = document.querySelector('.btn');
+      const r = btn.getBoundingClientRect();
+      spawnHearts(r.left + r.width/2, r.top);
+    }
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('btn')) {
+        spawnHearts(e.clientX, e.clientY);
+      }
+    });
+  </script>
+</body>
+</html>
