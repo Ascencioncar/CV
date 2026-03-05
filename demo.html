@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MotorStock — Sistema de Gestión</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg:#0d0e11; --surface:#161820; --surface2:#1e2028; --border:#2a2d38;
+  --accent:#f0a500; --green:#22c55e; --red:#ef4444; --blue:#3b82f6;
+  --text:#e8eaf0; --muted:#6b7280;
+  --fd:'Bebas Neue',sans-serif; --fm:'DM Mono',monospace; --fb:'DM Sans',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+
+/* ─── LOGIN ─── */
+#login-screen{position:fixed;inset:0;z-index:9000;display:flex;align-items:stretch;background:var(--bg)}
+.ll{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:60px;position:relative;overflow:hidden;background:radial-gradient(ellipse 700px 500px at 30% 50%,rgba(240,165,0,.07) 0%,transparent 70%)}
+.lgrid{position:absolute;inset:0;background-image:linear-gradient(rgba(240,165,0,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(240,165,0,.05) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 100%)}
+.biglogo{font-family:'Bebas Neue',sans-serif;font-size:96px;line-height:.9;letter-spacing:4px;color:var(--accent);position:relative;z-index:1;text-shadow:0 0 80px rgba(240,165,0,.25);animation:glow 3s ease-in-out infinite alternate;text-align:center}
+@keyframes glow{from{text-shadow:0 0 40px rgba(240,165,0,.15)}to{text-shadow:0 0 120px rgba(240,165,0,.5),0 0 200px rgba(240,165,0,.2)}}
+.ltag{font-size:13px;letter-spacing:5px;text-transform:uppercase;color:var(--muted);margin-top:12px;position:relative;z-index:1;text-align:center}
+.lver{display:inline-block;margin-top:14px;font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);background:rgba(240,165,0,.1);border:1px solid rgba(240,165,0,.2);padding:4px 14px;border-radius:20px;position:relative;z-index:1}
+.lfeats{margin-top:50px;display:flex;flex-direction:column;gap:12px;position:relative;z-index:1}
+.lfeat{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--muted)}
+.fdot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);flex-shrink:0}
+
+.lr{width:440px;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;justify-content:center;padding:52px 46px;position:relative}
+.lr::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),#ff5c35)}
+.ltitle{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;color:var(--text)}
+.lsub{font-size:14px;color:var(--muted);margin-top:4px}
+.lform{margin-top:30px;display:flex;flex-direction:column;gap:15px}
+.llabel{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px}
+.lwrap{position:relative}
+.licon{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none}
+.linput{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px 12px 40px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s}
+.linput:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(240,165,0,.1)}
+.linput::placeholder{color:var(--muted)}
+.lerr{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:7px;padding:10px 14px;font-size:13px;color:#fca5a5;display:none}
+.lerr.show{display:block;animation:shake .4s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.lbtn{width:100%;padding:14px;background:var(--accent);color:#000;border:none;border-radius:8px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;transition:all .2s;margin-top:4px}
+.lbtn:hover{background:#fbbf24;transform:translateY(-1px);box-shadow:0 8px 24px rgba(240,165,0,.3)}
+.lbtn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.hint-s{margin-top:26px;padding-top:22px;border-top:1px solid var(--border)}
+.hlabel{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.uchips{display:flex;flex-direction:column;gap:8px}
+.uchip{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;transition:all .15s}
+.uchip:hover{border-color:var(--accent);background:rgba(240,165,0,.05)}
+.uav{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:13px;flex-shrink:0}
+.uav.a{background:rgba(240,165,0,.2);color:var(--accent)}
+.uav.v{background:rgba(34,197,94,.2);color:var(--green)}
+.uav.t{background:rgba(59,130,246,.2);color:var(--blue)}
+.uname{font-size:13px;font-weight:600;color:var(--text)}
+.urole{font-size:11px;color:var(--muted)}
+
+/* ─── APP ─── */
+#app{display:none;opacity:0;transition:opacity .35s}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100}
+.slogo{padding:20px 20px 16px;border-bottom:1px solid var(--border)}
+.slogo h1{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:var(--accent);line-height:1}
+.slogo span{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.suser{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.suav{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:13px;flex-shrink:0}
+.suav.a{background:rgba(240,165,0,.2);color:var(--accent)}
+.suav.v{background:rgba(34,197,94,.2);color:var(--green)}
+.suav.t{background:rgba(59,130,246,.2);color:var(--blue)}
+.suname{font-size:13px;font-weight:600}
+.surole{font-size:11px;color:var(--muted)}
+.sout{margin-left:auto;cursor:pointer;font-size:18px;color:var(--muted);transition:color .15s;padding:4px}
+.sout:hover{color:var(--red)}
+.snav{flex:1;padding:12px 0;overflow-y:auto}
+.ni{display:flex;align-items:center;gap:12px;padding:11px 20px;cursor:pointer;color:var(--muted);font-size:14px;font-weight:500;transition:all .15s;border-left:3px solid transparent}
+.ni:hover{color:var(--text);background:var(--surface2)}
+.ni.active{color:var(--accent);border-left-color:var(--accent);background:rgba(240,165,0,.07)}
+.ni .ic{font-size:17px;width:20px;text-align:center}
+.ni.locked{opacity:.3;cursor:not-allowed;pointer-events:none}
+.ni.locked::after{content:'🔒';font-size:11px;margin-left:auto}
+.sfoot{padding:12px 20px;border-top:1px solid var(--border);font-size:11px;color:var(--muted)}
+.main{margin-left:220px;min-height:100vh;padding:28px}
+.page{display:none}
+.page.active{display:block}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.ptitle{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px}
+.ptitle span{color:var(--accent)}
+.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;position:relative;overflow:hidden}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.sc.ca::before{background:var(--accent)}.sc.cg::before{background:var(--green)}.sc.cr::before{background:var(--red)}.sc.cb::before{background:var(--blue)}
+.sl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.sv{font-family:'Bebas Neue',sans-serif;font-size:38px;line-height:1}
+.ss{font-size:12px;color:var(--muted);margin-top:3px}
+.tbox{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.tbar{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.ts{flex:1;min-width:180px;max-width:300px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 13px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none}
+.ts:focus{border-color:var(--accent)}
+.ts::placeholder{color:var(--muted)}
+.tsel{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text);font-size:13px;outline:none}
+table{width:100%;border-collapse:collapse}
+thead{background:var(--surface2)}
+th{padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+td{padding:12px 14px;font-size:13px;border-top:1px solid var(--border)}
+tr:hover td{background:rgba(255,255,255,.015)}
+.stag{font-family:'DM Mono',monospace;font-size:12px;background:rgba(240,165,0,.1);color:var(--accent);padding:3px 8px;border-radius:4px;border:1px solid rgba(240,165,0,.2)}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500}
+.bg{background:rgba(34,197,94,.15);color:var(--green)}.br{background:rgba(239,68,68,.15);color:var(--red)}.by{background:rgba(240,165,0,.15);color:var(--accent)}.bb{background:rgba(59,130,246,.15);color:var(--blue)}.bx{background:rgba(107,114,128,.2);color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all .15s}
+.bta{background:var(--accent);color:#000}.bta:hover{background:#fbbf24}
+.btd{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}.btd:hover{background:rgba(239,68,68,.25)}
+.btg{background:var(--surface2);color:var(--text);border:1px solid var(--border)}.btg:hover{border-color:var(--accent);color:var(--accent)}
+.bts{padding:5px 11px;font-size:12px;border-radius:5px}
+.abts{display:flex;gap:6px}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.mo.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding:26px;animation:mup .2s ease}
+@keyframes mup{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.mtitle{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;color:var(--accent);margin-bottom:18px}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg.f{grid-column:1/-1}
+.fg label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}
+.fg input,.fg select,.fg textarea{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:9px 11px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .15s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent)}
+.fg input::placeholder{color:var(--muted)}
+.fg textarea{resize:vertical;min-height:75px}
+.fg select option{background:var(--surface2)}
+.macts{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;padding-top:15px;border-top:1px solid var(--border)}
+.tc{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:8px;z-index:9999}
+.toast{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--green);border-radius:8px;padding:11px 16px;font-size:14px;min-width:210px;animation:tin .2s ease}
+.toast.e{border-left-color:var(--red)}.toast.w{border-left-color:var(--accent)}
+@keyframes tin{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+.empty{text-align:center;padding:46px 20px;color:var(--muted)}
+.empty .ei{font-size:40px;margin-bottom:8px}
+.empty h3{font-size:15px;color:var(--text);margin-bottom:3px}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.dcard{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.dch{padding:12px 16px;border-bottom:1px solid var(--border);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.dcb{padding:14px 16px}
+.ait{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px}
+.ait:last-child{border-bottom:none}
+.adot{width:7px;height:7px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.adot.g{background:var(--green)}.adot.r{background:var(--red)}.adot.b{background:var(--blue)}.adot.y{background:var(--accent)}
+.atime{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace}
+.abar{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#fca5a5;display:flex;align-items:center;gap:10px}
+.dr{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.dr:last-child{border-bottom:none}
+.dlb{color:var(--muted)}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="ll">
+    <div class="lgrid"></div>
+    <div style="text-align:center;position:relative;z-index:1">
+      <div class="biglogo">MOTOR<br>STOCK</div>
+      <div class="ltag">Sistema de Gestión Industrial</div>
+      <div class="lver">v1.0 — Medellín, Colombia</div>
+    </div>
+    <div class="lfeats">
+      <div class="lfeat"><div class="fdot"></div>Gestión de motores con serial único</div>
+      <div class="lfeat"><div class="fdot"></div>Control de repuestos y herramientas</div>
+      <div class="lfeat"><div class="fdot"></div>Registro de compras y ventas</div>
+      <div class="lfeat"><div class="fdot"></div>Reportes y alertas de stock bajo</div>
+      <div class="lfeat"><div class="fdot"></div>Control de acceso por roles</div>
+    </div>
+  </div>
+  <div class="lr">
+    <div class="ltitle">INICIAR SESIÓN</div>
+    <div class="lsub">Ingresa tus credenciales para continuar</div>
+    <div class="lform">
+      <div>
+        <label class="llabel">Usuario</label>
+        <div class="lwrap"><span class="licon">👤</span><input class="linput" id="lu" type="text" placeholder="nombre de usuario" autocomplete="off"></div>
+      </div>
+      <div>
+        <label class="llabel">Contraseña</label>
+        <div class="lwrap"><span class="licon">🔑</span><input class="linput" id="lp" type="password" placeholder="••••••••" autocomplete="off"></div>
+      </div>
+      <div class="lerr" id="lerr">❌ Usuario o contraseña incorrectos</div>
+      <button class="lbtn" id="lbtn" onclick="doLogin()">INGRESAR</button>
+    </div>
+    <div class="hint-s">
+      <div class="hlabel">Usuarios de demo — clic para autocompletar</div>
+      <div class="uchips">
+        <div class="uchip" onclick="fillLogin('admin','admin123')">
+          <div class="uav a">AD</div>
+          <div style="flex:1"><div class="uname">admin / admin123</div><div class="urole">Administrador · acceso total</div></div>
+          <span class="badge by" style="font-size:10px">Admin</span>
+        </div>
+        <div class="uchip" onclick="fillLogin('vendedor','venta456')">
+          <div class="uav v">VN</div>
+          <div style="flex:1"><div class="uname">vendedor / venta456</div><div class="urole">Ventas · compras y ventas</div></div>
+          <span class="badge bg" style="font-size:10px">Ventas</span>
+        </div>
+        <div class="uchip" onclick="fillLogin('tecnico','tec789')">
+          <div class="uav t">TC</div>
+          <div style="flex:1"><div class="uname">tecnico / tec789</div><div class="urole">Técnico · solo inventario</div></div>
+          <span class="badge bb" style="font-size:10px">Técnico</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <aside class="sidebar">
+    <div class="slogo"><h1>MOTOR<br>STOCK</h1><span>Sistema de Gestión</span></div>
+    <div class="suser" id="suser"></div>
+    <nav class="snav" id="snav">
+      <div class="ni" data-p="dashboard"><span class="ic">⚡</span> Dashboard</div>
+      <div class="ni" data-p="motores"><span class="ic">🔧</span> Motores</div>
+      <div class="ni" data-p="repuestos"><span class="ic">⚙️</span> Repuestos</div>
+      <div class="ni" data-p="herramientas"><span class="ic">🔩</span> Herramientas</div>
+      <div class="ni" data-p="compras"><span class="ic">📥</span> Compras</div>
+      <div class="ni" data-p="ventas"><span class="ic">📤</span> Ventas</div>
+      <div class="ni" data-p="reportes"><span class="ic">📊</span> Reportes</div>
+    </nav>
+    <div class="sfoot" id="sfoot">MotorStock v1.0</div>
+  </aside>
+  <main class="main">
+    <!-- DASHBOARD -->
+    <div class="page" id="page-dashboard">
+      <div class="ph"><h2 class="ptitle">DASH<span>BOARD</span></h2><span id="dddate" style="color:var(--muted);font-size:13px;font-family:'DM Mono',monospace"></span></div>
+      <div class="sgrid">
+        <div class="sc ca"><div class="sl">Motores Disponibles</div><div class="sv" id="ds-m">0</div><div class="ss">unidades en stock</div></div>
+        <div class="sc cg"><div class="sl">Repuestos</div><div class="sv" id="ds-r">0</div><div class="ss">referencias activas</div></div>
+        <div class="sc cb"><div class="sl">Herramientas</div><div class="sv" id="ds-h">0</div><div class="ss">en inventario</div></div>
+        <div class="sc cr"><div class="sl">Ventas del Mes</div><div class="sv" id="ds-v">0</div><div class="ss" id="ds-vv">$0</div></div>
+      </div>
+      <div id="d-alert"></div>
+      <div class="dgrid">
+        <div class="dcard"><div class="dch">⚡ Actividad Reciente</div><div class="dcb" id="d-act"></div></div>
+        <div class="dcard"><div class="dch">🔥 Motores Disponibles</div><div class="dcb" id="d-mots"></div></div>
+      </div>
+    </div>
+    <!-- MOTORES -->
+    <div class="page" id="page-motores">
+      <div class="ph"><h2 class="ptitle">MOTO<span>RES</span></h2><button class="btn bta" onclick="openM('motor')">+ Agregar Motor</button></div>
+      <div class="tbox">
+        <div class="tbar">
+          <input class="ts" id="fs-m" placeholder="Buscar serial, marca, modelo..." oninput="rMotores()">
+          <select class="tsel" id="fe-m" onchange="rMotores()"><option value="">Todos</option><option value="disponible">Disponible</option><option value="vendido">Vendido</option><option value="reparacion">En Reparación</option><option value="reservado">Reservado</option></select>
+        </div>
+        <table><thead><tr><th>Serial</th><th>Marca</th><th>Modelo</th><th>Tipo</th><th>Potencia</th><th>P.Compra</th><th>P.Venta</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="tb-m"></tbody></table>
+      </div>
+    </div>
+    <!-- REPUESTOS -->
+    <div class="page" id="page-repuestos">
+      <div class="ph"><h2 class="ptitle">REPUES<span>TOS</span></h2><button class="btn bta" onclick="openM('repuesto')">+ Agregar Repuesto</button></div>
+      <div class="tbox">
+        <div class="tbar"><input class="ts" id="fs-r" placeholder="Buscar código, nombre..." oninput="rRepuestos()"></div>
+        <table><thead><tr><th>Código</th><th>Nombre</th><th>Categoría</th><th>Compatible</th><th>Stock</th><th>Mín.</th><th>Precio</th><th>Acciones</th></tr></thead><tbody id="tb-r"></tbody></table>
+      </div>
+    </div>
+    <!-- HERRAMIENTAS -->
+    <div class="page" id="page-herramientas">
+      <div class="ph"><h2 class="ptitle">HERRA<span>MIENTAS</span></h2><button class="btn bta" onclick="openM('herramienta')">+ Agregar Herramienta</button></div>
+      <div class="tbox">
+        <div class="tbar"><input class="ts" id="fs-h" placeholder="Buscar herramienta..." oninput="rHerramientas()"></div>
+        <table><thead><tr><th>Código</th><th>Nombre</th><th>Categoría</th><th>Marca</th><th>Stock</th><th>Estado</th><th>Precio</th><th>Acciones</th></tr></thead><tbody id="tb-h"></tbody></table>
+      </div>
+    </div>
+    <!-- COMPRAS -->
+    <div class="page" id="page-compras">
+      <div class="ph"><h2 class="ptitle">COM<span>PRAS</span></h2><button class="btn bta" onclick="openM('compra')">+ Registrar Compra</button></div>
+      <div class="tbox">
+        <div class="tbar"><input class="ts" id="fs-c" placeholder="Buscar proveedor, referencia..." oninput="rCompras()"></div>
+        <table><thead><tr><th>Fecha</th><th>Tipo</th><th>Referencia</th><th>Proveedor</th><th>Cant.</th><th>P.Unit.</th><th>Total</th><th>Notas</th></tr></thead><tbody id="tb-c"></tbody></table>
+      </div>
+    </div>
+    <!-- VENTAS -->
+    <div class="page" id="page-ventas">
+      <div class="ph"><h2 class="ptitle">VEN<span>TAS</span></h2><button class="btn bta" onclick="openM('venta')">+ Registrar Venta</button></div>
+      <div class="tbox">
+        <div class="tbar"><input class="ts" id="fs-v" placeholder="Buscar cliente, referencia..." oninput="rVentas()"></div>
+        <table><thead><tr><th>Fecha</th><th>Tipo</th><th>Referencia</th><th>Cliente</th><th>Cant.</th><th>P.Unit.</th><th>Total</th><th>Notas</th></tr></thead><tbody id="tb-v"></tbody></table>
+      </div>
+    </div>
+    <!-- REPORTES -->
+    <div class="page" id="page-reportes">
+      <div class="ph"><h2 class="ptitle">REPOR<span>TES</span></h2><button class="btn btg" onclick="exportCSV()">⬇ Exportar CSV</button></div>
+      <div class="sgrid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="sc cg"><div class="sl">Total Compras</div><div class="sv" id="rp-tc">$0</div><div class="ss" id="rp-nc">0</div></div>
+        <div class="sc ca"><div class="sl">Total Ventas</div><div class="sv" id="rp-tv">$0</div><div class="ss" id="rp-nv">0</div></div>
+        <div class="sc cb"><div class="sl">Utilidad Bruta</div><div class="sv" id="rp-ut">$0</div><div class="ss">ventas − compras</div></div>
+      </div>
+      <div class="dgrid">
+        <div class="dcard"><div class="dch">📦 Inventario Valorizado</div><div class="dcb" id="rp-inv"></div></div>
+        <div class="dcard"><div class="dch">🏆 Top Motores Vendidos</div><div class="dcb" id="rp-top"></div></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- MODALS -->
+<div class="mo" id="mo-motor">
+  <div class="modal">
+    <div class="mtitle" id="mt-m">NUEVO MOTOR</div>
+    <div class="fg2">
+      <div class="fg"><label>Serial *</label><input id="mm-s" placeholder="MTR-2024-001" oninput="this.value=this.value.toUpperCase()"></div>
+      <div class="fg"><label>Marca *</label><input id="mm-ma" placeholder="WEG, Siemens..."></div>
+      <div class="fg"><label>Modelo *</label><input id="mm-mo" placeholder="W22-5.5kW"></div>
+      <div class="fg"><label>Tipo</label><select id="mm-t"><option value="trifasico">Trifásico</option><option value="monofasico">Monofásico</option><option value="dc">Corriente Directa</option><option value="paso">Paso a Paso</option><option value="servo">Servo</option><option value="otro">Otro</option></select></div>
+      <div class="fg"><label>Potencia</label><input id="mm-p" placeholder="5.5kW / 7.5HP"></div>
+      <div class="fg"><label>RPM</label><input id="mm-r" placeholder="1800"></div>
+      <div class="fg"><label>Voltaje</label><input id="mm-v" placeholder="220/440V"></div>
+      <div class="fg"><label>Estado</label><select id="mm-e"><option value="disponible">Disponible</option><option value="reparacion">En Reparación</option><option value="reservado">Reservado</option></select></div>
+      <div class="fg"><label>Precio Compra ($) *</label><input id="mm-pc" type="number" placeholder="0"></div>
+      <div class="fg"><label>Precio Venta ($) *</label><input id="mm-pv" type="number" placeholder="0"></div>
+      <div class="fg f"><label>Notas</label><textarea id="mm-n" placeholder="Condición, historial..."></textarea></div>
+    </div>
+    <div class="macts"><button class="btn btg" onclick="closeM('motor')">Cancelar</button><button class="btn bta" onclick="saveMotor()">Guardar</button></div>
+  </div>
+</div>
+
+<div class="mo" id="mo-repuesto">
+  <div class="modal">
+    <div class="mtitle">NUEVO REPUESTO</div>
+    <div class="fg2">
+      <div class="fg"><label>Código *</label><input id="mr-c" placeholder="ROD-6205-2RS" oninput="this.value=this.value.toUpperCase()"></div>
+      <div class="fg"><label>Nombre *</label><input id="mr-n" placeholder="Rodamiento 6205"></div>
+      <div class="fg"><label>Categoría</label><select id="mr-cat"><option value="rodamientos">Rodamientos</option><option value="bobinas">Bobinas/Devanados</option><option value="condensadores">Condensadores</option><option value="escobillas">Escobillas</option><option value="ejes">Ejes/Acoples</option><option value="sellos">Sellos/Retenes</option><option value="ventiladores">Ventiladores</option><option value="cables">Cables</option><option value="otro">Otro</option></select></div>
+      <div class="fg"><label>Compatible con</label><input id="mr-co" placeholder="WEG IE3..."></div>
+      <div class="fg"><label>Stock *</label><input id="mr-st" type="number" placeholder="0" min="0"></div>
+      <div class="fg"><label>Stock Mínimo</label><input id="mr-sm" type="number" placeholder="5" min="0"></div>
+      <div class="fg"><label>Precio ($) *</label><input id="mr-p" type="number" placeholder="0"></div>
+      <div class="fg"><label>Proveedor</label><input id="mr-pr" placeholder="Nombre proveedor"></div>
+      <div class="fg f"><label>Notas</label><textarea id="mr-no" placeholder="Especificaciones..."></textarea></div>
+    </div>
+    <div class="macts"><button class="btn btg" onclick="closeM('repuesto')">Cancelar</button><button class="btn bta" onclick="saveRepuesto()">Guardar</button></div>
+  </div>
+</div>
+
+<div class="mo" id="mo-herramienta">
+  <div class="modal">
+    <div class="mtitle">NUEVA HERRAMIENTA</div>
+    <div class="fg2">
+      <div class="fg"><label>Código *</label><input id="mh-c" placeholder="HER-001" oninput="this.value=this.value.toUpperCase()"></div>
+      <div class="fg"><label>Nombre *</label><input id="mh-n" placeholder="Multímetro Digital"></div>
+      <div class="fg"><label>Categoría</label><select id="mh-cat"><option value="medicion">Medición y Prueba</option><option value="mecanica">Mecánica</option><option value="electrica">Eléctrica</option><option value="bobinado">Bobinado</option><option value="elevacion">Elevación</option><option value="corte">Corte y Desbaste</option><option value="otro">Otro</option></select></div>
+      <div class="fg"><label>Marca</label><input id="mh-ma" placeholder="Fluke, Stanley..."></div>
+      <div class="fg"><label>Stock *</label><input id="mh-st" type="number" placeholder="1" min="1"></div>
+      <div class="fg"><label>Estado</label><select id="mh-e"><option value="disponible">Disponible</option><option value="en-uso">En Uso</option><option value="mantenimiento">Mantenimiento</option><option value="dañada">Dañada</option></select></div>
+      <div class="fg"><label>Precio ($)</label><input id="mh-p" type="number" placeholder="0"></div>
+      <div class="fg"><label>Ubicación</label><input id="mh-u" placeholder="Taller A, Estante 2"></div>
+      <div class="fg f"><label>Notas</label><textarea id="mh-no" placeholder="Observaciones..."></textarea></div>
+    </div>
+    <div class="macts"><button class="btn btg" onclick="closeM('herramienta')">Cancelar</button><button class="btn bta" onclick="saveHerramienta()">Guardar</button></div>
+  </div>
+</div>
+
+<div class="mo" id="mo-compra">
+  <div class="modal">
+    <div class="mtitle">REGISTRAR COMPRA</div>
+    <div class="fg2">
+      <div class="fg"><label>Tipo *</label><select id="mc-t" onchange="fillRef('mc-ref','mc-t',false)"><option value="motor">Motor</option><option value="repuesto">Repuesto</option><option value="herramienta">Herramienta</option></select></div>
+      <div class="fg"><label>Referencia *</label><select id="mc-ref" onchange="pprice('mc-ref','mc-p')"></select></div>
+      <div class="fg"><label>Proveedor *</label><input id="mc-pr" placeholder="Nombre proveedor"></div>
+      <div class="fg"><label>Fecha *</label><input id="mc-f" type="date"></div>
+      <div class="fg"><label>Cantidad *</label><input id="mc-q" type="number" value="1" min="1" oninput="upd('mc')"></div>
+      <div class="fg"><label>Precio Unit. ($) *</label><input id="mc-p" type="number" placeholder="0" oninput="upd('mc')"></div>
+      <div class="fg f"><label>Total: <span id="mc-tot" style="color:var(--accent)">$0</span></label></div>
+      <div class="fg f"><label>Notas</label><textarea id="mc-n" placeholder="Factura, condiciones..."></textarea></div>
+    </div>
+    <div class="macts"><button class="btn btg" onclick="closeM('compra')">Cancelar</button><button class="btn bta" onclick="saveCompra()">Registrar</button></div>
+  </div>
+</div>
+
+<div class="mo" id="mo-venta">
+  <div class="modal">
+    <div class="mtitle">REGISTRAR VENTA</div>
+    <div class="fg2">
+      <div class="fg"><label>Tipo *</label><select id="mv-t" onchange="fillRef('mv-ref','mv-t',true)"><option value="motor">Motor</option><option value="repuesto">Repuesto</option><option value="herramienta">Herramienta</option></select></div>
+      <div class="fg"><label>Referencia *</label><select id="mv-ref" onchange="pprice('mv-ref','mv-p')"></select></div>
+      <div class="fg"><label>Cliente *</label><input id="mv-cl" placeholder="Nombre cliente"></div>
+      <div class="fg"><label>Fecha *</label><input id="mv-f" type="date"></div>
+      <div class="fg"><label>Cantidad *</label><input id="mv-q" type="number" value="1" min="1" oninput="upd('mv')"></div>
+      <div class="fg"><label>Precio Unit. ($) *</label><input id="mv-p" type="number" placeholder="0" oninput="upd('mv')"></div>
+      <div class="fg f"><label>Total: <span id="mv-tot" style="color:var(--green)">$0</span></label></div>
+      <div class="fg f"><label>Notas</label><textarea id="mv-n" placeholder="Garantía, observaciones..."></textarea></div>
+    </div>
+    <div class="macts"><button class="btn btg" onclick="closeM('venta')">Cancelar</button><button class="btn bta" onclick="saveVenta()">Registrar</button></div>
+  </div>
+</div>
+
+
+<!-- Confirm Logout Modal -->
+<div class="mo" id="mo-confirm">
+  <div class="modal" style="max-width:380px;text-align:center">
+    <div style="font-size:40px;margin-bottom:12px">⏏</div>
+    <div class="mtitle" style="justify-content:center;display:block">CERRAR SESIÓN</div>
+    <p style="color:var(--muted);font-size:14px;margin-bottom:20px">¿Estás seguro que deseas salir del sistema?</p>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button class="btn btg" onclick="cancelLogout()">Cancelar</button>
+      <button class="btn btd" onclick="confirmLogout()">Sí, cerrar sesión</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Delete Modal -->
+<div class="mo" id="mo-del">
+  <div class="modal" style="max-width:380px;text-align:center">
+    <div style="font-size:40px;margin-bottom:12px">🗑</div>
+    <div class="mtitle" style="display:block">CONFIRMAR ELIMINACIÓN</div>
+    <p id="del-msg" style="color:var(--muted);font-size:14px;margin-bottom:20px"></p>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button class="btn btg" onclick="cancelDel()">Cancelar</button>
+      <button class="btn btd" onclick="confirmDel()">Sí, eliminar</button>
+    </div>
+  </div>
+</div>
+
+<div class="tc" id="tc"></div>
+
+<script>
+// ════════════════════════════════════════
+// USUARIOS
+// ════════════════════════════════════════
+var USERS = [
+  { u:'admin',    p:'admin123', nom:'Administrador', rol:'Admin',   av:'AD', avc:'a', perms:['dashboard','motores','repuestos','herramientas','compras','ventas','reportes'] },
+  { u:'vendedor', p:'venta456', nom:'Juan Vendedor', rol:'Ventas',  av:'VN', avc:'v', perms:['dashboard','motores','repuestos','herramientas','compras','ventas'] },
+  { u:'tecnico',  p:'tec789',   nom:'Carlos Técnico',rol:'Técnico', av:'TC', avc:'t', perms:['dashboard','motores','repuestos','herramientas'] }
+];
+var CU = null; // current user
+
+function fillLogin(u, p) {
+  document.getElementById('lu').value = u;
+  document.getElementById('lp').value = p;
+}
+
+function doLogin() {
+  var u = document.getElementById('lu').value.trim().toLowerCase();
+  var p = document.getElementById('lp').value;
+  var found = null;
+  for (var i = 0; i < USERS.length; i++) {
+    if (USERS[i].u === u && USERS[i].p === p) { found = USERS[i]; break; }
+  }
+  var ee = document.getElementById('lerr');
+  var bb = document.getElementById('lbtn');
+  if (!found) {
+    ee.className = 'lerr show';
+    document.getElementById('lp').value = '';
+    return;
+  }
+  ee.className = 'lerr';
+  CU = found;
+  bb.disabled = true; bb.textContent = 'INGRESANDO...';
+  setTimeout(function() {
+    document.getElementById('login-screen').style.display = 'none';
+    var app = document.getElementById('app');
+    app.style.display = 'block';
+    setTimeout(function() { app.style.opacity = '1'; }, 20);
+    initApp();
+    bb.disabled = false; bb.textContent = 'INGRESAR';
+  }, 480);
+}
+
+function doLogout() {
+  document.getElementById('mo-confirm').classList.add('open');
+}
+function confirmLogout() {
+  document.getElementById('mo-confirm').classList.remove('open');
+  var app = document.getElementById('app');
+  app.style.opacity = '0';
+  CU = null;
+  setTimeout(function() {
+    app.style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('lu').value = '';
+    document.getElementById('lp').value = '';
+  }, 300);
+}
+function cancelLogout() {
+  document.getElementById('mo-confirm').classList.remove('open');
+}
+
+document.getElementById('lu').onkeydown = function(e){ if(e.key==='Enter') document.getElementById('lp').focus(); };
+document.getElementById('lp').onkeydown = function(e){ if(e.key==='Enter') doLogin(); };
+
+// ════════════════════════════════════════
+// INIT APP
+// ════════════════════════════════════════
+function initApp() {
+  // User bar
+  document.getElementById('suser').innerHTML =
+    '<div class="suav '+CU.avc+'">'+CU.av+'</div>' +
+    '<div style="flex:1"><div class="suname">'+CU.nom+'</div><div class="surole">'+CU.rol+'</div></div>' +
+    '<span class="sout" onclick="doLogout()" title="Cerrar sesión">⏏</span>';
+
+  // Nav perms
+  var pages = ['dashboard','motores','repuestos','herramientas','compras','ventas','reportes'];
+  var items = document.querySelectorAll('#snav .ni');
+  for (var i = 0; i < items.length; i++) {
+    var pg = pages[i];
+    if (CU.perms.indexOf(pg) >= 0) items[i].classList.remove('locked');
+    else items[i].classList.add('locked');
+  }
+  seedData();
+  goPage('dashboard');
+}
+
+// ════════════════════════════════════════
+// NAVEGACION
+// ════════════════════════════════════════
+function goPage(pg) {
+  if (!CU || CU.perms.indexOf(pg) < 0) { toast('Sin permiso para esta sección','e'); return; }
+  document.querySelectorAll('.page').forEach(function(x){ x.classList.remove('active'); });
+  document.querySelectorAll('#snav .ni').forEach(function(x){ x.classList.remove('active'); });
+  var el = document.getElementById('page-'+pg); if (el) el.classList.add('active');
+  var pages = ['dashboard','motores','repuestos','herramientas','compras','ventas','reportes'];
+  var idx = pages.indexOf(pg);
+  var navItems = document.querySelectorAll('#snav .ni');
+  if (idx >= 0 && navItems[idx]) navItems[idx].classList.add('active');
+  if (pg==='dashboard')    rDash();
+  else if (pg==='motores')      rMotores();
+  else if (pg==='repuestos')    rRepuestos();
+  else if (pg==='herramientas') rHerramientas();
+  else if (pg==='compras')      rCompras();
+  else if (pg==='ventas')       rVentas();
+  else if (pg==='reportes')     rReportes();
+}
+
+// Wire nav clicks
+document.querySelectorAll('#snav .ni').forEach(function(item) {
+  item.addEventListener('click', function() { goPage(item.getAttribute('data-p')); });
+});
+
+// ════════════════════════════════════════
+// DATA
+// ════════════════════════════════════════
+var DB = { mot:[], rep:[], her:[], com:[], ven:[], act:[] };
+
+function gid() { return Date.now().toString(36)+Math.random().toString(36).substr(2,4); }
+function tod()  { return new Date().toISOString().split('T')[0]; }
+function fmt(n) { return '$'+(+n||0).toLocaleString('es-CO'); }
+function addAct(txt, c) {
+  DB.act.unshift({ txt:txt, c:c||'b', t: new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}) });
+  if (DB.act.length > 40) DB.act.length = 40;
+}
+
+function seedData() {
+  if (DB.mot.length) return;
+  DB.mot = [
+    {id:gid(),s:'MTR-2024-001',ma:'WEG',    mo:'W22-5.5kW',      ti:'trifasico',po:'5.5kW/7.5HP',rp:'1800',vo:'220/440V',pc:850000, pv:1200000,es:'disponible',no:'Nuevo en caja'},
+    {id:gid(),s:'MTR-2024-002',ma:'Siemens',mo:'SIMOTICS-3.7kW', ti:'trifasico',po:'3.7kW/5HP',  rp:'1800',vo:'220/380V',pc:620000, pv:950000, es:'disponible',no:'Stock propio'},
+    {id:gid(),s:'MTR-2023-015',ma:'Baldor', mo:'EM3311T',         ti:'trifasico',po:'7.5HP',      rp:'3600',vo:'230/460V',pc:1100000,pv:1650000,es:'reparacion',no:'Cambio rodamientos'},
+    {id:gid(),s:'MTR-2024-003',ma:'WEG',    mo:'W21-2.2kW',       ti:'monofasico',po:'2.2kW/3HP', rp:'3600',vo:'110/220V',pc:430000, pv:680000, es:'reservado', no:'Cliente Ferretería Sur'},
+  ];
+  DB.rep = [
+    {id:gid(),cd:'ROD-6205-2RS',nm:'Rodamiento 6205-2RS',    ct:'rodamientos',  co:'WEG, Siemens IE3',  st:24,sm:5, pr:18000,pv:'RodaCol'},
+    {id:gid(),cd:'ROD-6306-ZZ', nm:'Rodamiento 6306-ZZ',     ct:'rodamientos',  co:'Siemens, Baldor',   st:3, sm:5, pr:25000,pv:'RodaCol'},
+    {id:gid(),cd:'COND-50UF',   nm:'Condensador arranque 50µF',ct:'condensadores',co:'Monofásicos',     st:8, sm:3, pr:35000,pv:'ElecParts'},
+    {id:gid(),cd:'ESC-14X8',    nm:'Escobillas carbón 14x8',  ct:'escobillas',   co:'Universal DC',      st:30,sm:10,pr:8500, pv:'CarbonTec'},
+  ];
+  DB.her = [
+    {id:gid(),cd:'HER-001',nm:'Multímetro Digital Fluke 117',  ct:'medicion',ma:'Fluke', st:2,es:'disponible',pr:380000,ub:'Taller A'},
+    {id:gid(),cd:'HER-002',nm:'Extractor Rodamientos 3 garras',ct:'mecanica', ma:'Gedore',st:3,es:'disponible',pr:95000, ub:'Estante 2'},
+    {id:gid(),cd:'HER-003',nm:'Pinza Amperimétrica 400A',       ct:'medicion',ma:'Uni-T', st:1,es:'en-uso',    pr:120000,ub:'Técnico'},
+  ];
+  addAct('Sistema iniciado con datos de demo','b');
+}
+
+// ════════════════════════════════════════
+// DASHBOARD
+// ════════════════════════════════════════
+function rDash() {
+  var md = DB.mot.filter(function(m){ return m.es==='disponible'; }).length;
+  document.getElementById('ds-m').textContent = md;
+  document.getElementById('ds-r').textContent = DB.rep.length;
+  document.getElementById('ds-h').textContent = DB.her.length;
+  var mes = new Date().toISOString().substr(0,7);
+  var vm = DB.ven.filter(function(v){ return (v.f||'').startsWith(mes); });
+  var tv = vm.reduce(function(s,v){ return s+(v.tot||0); },0);
+  document.getElementById('ds-v').textContent = vm.length;
+  document.getElementById('ds-vv').textContent = fmt(tv);
+  document.getElementById('dddate').textContent = new Date().toLocaleDateString('es-CO',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  var low = DB.rep.filter(function(r){ return r.sm>0 && r.st<=r.sm; });
+  document.getElementById('d-alert').innerHTML = low.length ? '<div class="abar">⚠️ <b>'+low.length+' repuesto(s) con stock bajo:</b> '+low.map(function(r){ return r.nm; }).join(', ')+'</div>' : '';
+  var ae = document.getElementById('d-act');
+  if (!DB.act.length) ae.innerHTML = '<div class="empty"><p>Sin actividad aún</p></div>';
+  else ae.innerHTML = DB.act.slice(0,8).map(function(a){ return '<div class="ait"><div class="adot '+a.c+'"></div><div style="flex:1">'+a.txt+'<div class="atime">'+a.t+'</div></div></div>'; }).join('');
+  var me = document.getElementById('d-mots');
+  var dp = DB.mot.filter(function(m){ return m.es==='disponible'; }).slice(0,5);
+  if (!dp.length) me.innerHTML = '<div class="empty"><p>Sin motores disponibles</p></div>';
+  else me.innerHTML = dp.map(function(m){ return '<div class="dr"><div class="dlb"><span class="stag">'+m.s+'</span> '+m.ma+' '+m.mo+'</div><div style="color:var(--green)">'+fmt(m.pv)+'</div></div>'; }).join('');
+  var tot = DB.mot.length+DB.rep.length+DB.her.length+DB.com.length+DB.ven.length;
+  document.getElementById('sfoot').textContent = 'MotorStock v1.0 · '+tot+' registros';
+}
+
+// ════════════════════════════════════════
+// MOTORES
+// ════════════════════════════════════════
+function rMotores() {
+  var f = (document.getElementById('fs-m').value||'').toLowerCase();
+  var fe = document.getElementById('fe-m').value;
+  var data = DB.mot.filter(function(m){ return (!f||(m.s+m.ma+m.mo).toLowerCase().includes(f))&&(!fe||m.es===fe); });
+  var ec = {disponible:'bg',vendido:'br',reparacion:'by',reservado:'bb'};
+  document.getElementById('tb-m').innerHTML = !data.length
+    ? '<tr><td colspan="9"><div class="empty"><div class="ei">🔧</div><h3>Sin motores</h3></div></td></tr>'
+    : data.map(function(m){ return '<tr><td><span class="stag">'+m.s+'</span></td><td>'+m.ma+'</td><td>'+m.mo+'</td><td>'+m.ti+'</td><td>'+(m.po||'-')+'</td><td style="font-family:\'DM Mono\',monospace">'+fmt(m.pc)+'</td><td style="font-family:\'DM Mono\',monospace;color:var(--green)">'+fmt(m.pv)+'</td><td><span class="badge '+(ec[m.es]||'bx')+'">'+m.es+'</span></td><td><div class="abts"><button class="btn btg bts" onclick="editMotor(\''+m.id+'\')">✏️</button><button class="btn btd bts" onclick="delIt(\'mot\',\''+m.id+'\',\'motor\')">🗑</button></div></td></tr>'; }).join('');
+}
+
+var EID = null;
+
+function saveMotor() {
+  var s=document.getElementById('mm-s').value.trim(), ma=document.getElementById('mm-ma').value.trim(), mo=document.getElementById('mm-mo').value.trim();
+  var pc=parseFloat(document.getElementById('mm-pc').value)||0, pv=parseFloat(document.getElementById('mm-pv').value)||0;
+  if (!s||!ma||!mo) { toast('Completa los campos obligatorios (*)','e'); return; }
+  if (!EID && DB.mot.find(function(m){ return m.s===s; })) { toast('Ya existe ese serial','e'); return; }
+  var o={id:EID||gid(),s:s,ma:ma,mo:mo,ti:document.getElementById('mm-t').value,po:document.getElementById('mm-p').value.trim(),rp:document.getElementById('mm-r').value.trim(),vo:document.getElementById('mm-v').value.trim(),pc:pc,pv:pv,es:document.getElementById('mm-e').value,no:document.getElementById('mm-n').value.trim()};
+  if (EID) { var i=DB.mot.findIndex(function(m){ return m.id===EID; }); if(i>=0)DB.mot[i]=o; addAct('Motor editado: '+s,'y'); toast('Motor actualizado'); }
+  else { DB.mot.push(o); addAct('Motor agregado: '+s+' — '+ma+' '+mo,'g'); toast('Motor registrado'); }
+  closeM('motor'); rMotores();
+}
+
+function editMotor(id) {
+  var m=DB.mot.find(function(x){ return x.id===id; }); if(!m)return;
+  EID=id;
+  document.getElementById('mm-s').value=m.s; document.getElementById('mm-ma').value=m.ma;
+  document.getElementById('mm-mo').value=m.mo; document.getElementById('mm-t').value=m.ti||'trifasico';
+  document.getElementById('mm-p').value=m.po||''; document.getElementById('mm-r').value=m.rp||'';
+  document.getElementById('mm-v').value=m.vo||''; document.getElementById('mm-pc').value=m.pc;
+  document.getElementById('mm-pv').value=m.pv; document.getElementById('mm-e').value=m.es;
+  document.getElementById('mm-n').value=m.no||''; document.getElementById('mt-m').textContent='EDITAR MOTOR';
+  document.getElementById('mo-motor').classList.add('open');
+}
+
+// ════════════════════════════════════════
+// REPUESTOS
+// ════════════════════════════════════════
+function rRepuestos() {
+  var f=(document.getElementById('fs-r').value||'').toLowerCase();
+  var data=DB.rep.filter(function(r){ return !f||(r.cd+r.nm+r.ct).toLowerCase().includes(f); });
+  document.getElementById('tb-r').innerHTML = !data.length
+    ? '<tr><td colspan="8"><div class="empty"><div class="ei">⚙️</div><h3>Sin repuestos</h3></div></td></tr>'
+    : data.map(function(r){ var bj=r.sm>0&&r.st<=r.sm; return '<tr><td><span class="stag">'+r.cd+'</span></td><td>'+r.nm+'</td><td>'+r.ct+'</td><td style="font-size:12px;color:var(--muted)">'+(r.co||'-')+'</td><td><span class="badge '+(bj?'br':r.st>10?'bg':'by')+'">'+r.st+'</span>'+(bj?' <small style="color:var(--red)">⚠️</small>':'')+'</td><td style="color:var(--muted)">'+(r.sm||0)+'</td><td style="font-family:\'DM Mono\',monospace">'+fmt(r.pr)+'</td><td><div class="abts"><button class="btn btg bts" onclick="editRep(\''+r.id+'\')">✏️</button><button class="btn btd bts" onclick="delIt(\'rep\',\''+r.id+'\',\'repuesto\')">🗑</button></div></td></tr>'; }).join('');
+}
+
+function saveRepuesto() {
+  var c=document.getElementById('mr-c').value.trim(), n=document.getElementById('mr-n').value.trim();
+  if(!c||!n){toast('Código y nombre obligatorios','e');return;}
+  var o={id:EID||gid(),cd:c,nm:n,ct:document.getElementById('mr-cat').value,co:document.getElementById('mr-co').value.trim(),st:parseInt(document.getElementById('mr-st').value)||0,sm:parseInt(document.getElementById('mr-sm').value)||0,pr:parseFloat(document.getElementById('mr-p').value)||0,pv:document.getElementById('mr-pr').value.trim(),no:document.getElementById('mr-no').value.trim()};
+  if(EID){var i=DB.rep.findIndex(function(r){return r.id===EID;});if(i>=0)DB.rep[i]=o;toast('Repuesto actualizado');}
+  else{DB.rep.push(o);addAct('Repuesto: '+c+' — '+n,'b');toast('Repuesto registrado');}
+  closeM('repuesto');rRepuestos();
+}
+
+function editRep(id) {
+  var r=DB.rep.find(function(x){return x.id===id;});if(!r)return;EID=id;
+  document.getElementById('mr-c').value=r.cd;document.getElementById('mr-n').value=r.nm;
+  document.getElementById('mr-cat').value=r.ct;document.getElementById('mr-co').value=r.co||'';
+  document.getElementById('mr-st').value=r.st;document.getElementById('mr-sm').value=r.sm||0;
+  document.getElementById('mr-p').value=r.pr;document.getElementById('mr-pr').value=r.pv||'';
+  document.getElementById('mr-no').value=r.no||'';
+  document.getElementById('mo-repuesto').classList.add('open');
+}
+
+// ════════════════════════════════════════
+// HERRAMIENTAS
+// ════════════════════════════════════════
+function rHerramientas() {
+  var f=(document.getElementById('fs-h').value||'').toLowerCase();
+  var data=DB.her.filter(function(h){return !f||(h.cd+h.nm+h.ct).toLowerCase().includes(f);});
+  var ec={disponible:'bg','en-uso':'bb',mantenimiento:'by','dañada':'br'};
+  document.getElementById('tb-h').innerHTML = !data.length
+    ? '<tr><td colspan="8"><div class="empty"><div class="ei">🔩</div><h3>Sin herramientas</h3></div></td></tr>'
+    : data.map(function(h){return '<tr><td><span class="stag">'+h.cd+'</span></td><td>'+h.nm+'</td><td>'+h.ct+'</td><td>'+(h.ma||'-')+'</td><td><span class="badge '+(h.st>0?'bg':'br')+'">'+h.st+'</span></td><td><span class="badge '+(ec[h.es]||'bx')+'">'+h.es+'</span></td><td style="font-family:\'DM Mono\',monospace">'+fmt(h.pr)+'</td><td><div class="abts"><button class="btn btg bts" onclick="editHer(\''+h.id+'\')">✏️</button><button class="btn btd bts" onclick="delIt(\'her\',\''+h.id+'\',\'herramienta\')">🗑</button></div></td></tr>';}).join('');
+}
+
+function saveHerramienta() {
+  var c=document.getElementById('mh-c').value.trim(),n=document.getElementById('mh-n').value.trim();
+  if(!c||!n){toast('Código y nombre obligatorios','e');return;}
+  var o={id:EID||gid(),cd:c,nm:n,ct:document.getElementById('mh-cat').value,ma:document.getElementById('mh-ma').value.trim(),st:parseInt(document.getElementById('mh-st').value)||1,es:document.getElementById('mh-e').value,pr:parseFloat(document.getElementById('mh-p').value)||0,ub:document.getElementById('mh-u').value.trim(),no:document.getElementById('mh-no').value.trim()};
+  if(EID){var i=DB.her.findIndex(function(h){return h.id===EID;});if(i>=0)DB.her[i]=o;toast('Herramienta actualizada');}
+  else{DB.her.push(o);addAct('Herramienta: '+c+' — '+n,'b');toast('Herramienta registrada');}
+  closeM('herramienta');rHerramientas();
+}
+
+function editHer(id) {
+  var h=DB.her.find(function(x){return x.id===id;});if(!h)return;EID=id;
+  document.getElementById('mh-c').value=h.cd;document.getElementById('mh-n').value=h.nm;
+  document.getElementById('mh-cat').value=h.ct;document.getElementById('mh-ma').value=h.ma||'';
+  document.getElementById('mh-st').value=h.st;document.getElementById('mh-e').value=h.es;
+  document.getElementById('mh-p').value=h.pr;document.getElementById('mh-u').value=h.ub||'';
+  document.getElementById('mh-no').value=h.no||'';
+  document.getElementById('mo-herramienta').classList.add('open');
+}
+
+// ════════════════════════════════════════
+// COMPRAS / VENTAS — helpers
+// ════════════════════════════════════════
+function fillRef(selId, tipoId, onlyAvail) {
+  var tipo=document.getElementById(tipoId).value;
+  var sel=document.getElementById(selId);
+  sel.innerHTML='';
+  var items=[];
+  if(tipo==='motor'){
+    items=onlyAvail?DB.mot.filter(function(m){return m.es==='disponible';}):DB.mot;
+    items.forEach(function(m){var o=document.createElement('option');o.value=m.s;o.textContent=m.s+' — '+m.ma+' '+m.mo;o.dataset.pr=onlyAvail?m.pv:m.pc;sel.appendChild(o);});
+  } else if(tipo==='repuesto'){
+    items=onlyAvail?DB.rep.filter(function(r){return r.st>0;}):DB.rep;
+    items.forEach(function(r){var o=document.createElement('option');o.value=r.cd;o.textContent=r.cd+' — '+r.nm+' (stock:'+r.st+')';o.dataset.pr=r.pr;sel.appendChild(o);});
+  } else {
+    items=onlyAvail?DB.her.filter(function(h){return h.st>0;}):DB.her;
+    items.forEach(function(h){var o=document.createElement('option');o.value=h.cd;o.textContent=h.cd+' — '+h.nm;o.dataset.pr=h.pr;sel.appendChild(o);});
+  }
+  if(!items.length){var o=document.createElement('option');o.value='';o.textContent='— Sin '+tipo+'s —';sel.appendChild(o);}
+  pprice(selId, selId.replace('-ref', tipoId.startsWith('mc')?'-p':'-p'));
+}
+
+function pprice(selId, prId) {
+  var sel=document.getElementById(selId);
+  var pre=document.getElementById(prId);
+  if(!sel||!pre)return;
+  var opt=sel.options[sel.selectedIndex];
+  if(opt&&opt.dataset.pr){ pre.value=opt.dataset.pr; }
+  var prefix=prId.startsWith('mc')?'mc':'mv';
+  upd(prefix);
+}
+
+function upd(pre) {
+  var q=parseFloat(document.getElementById(pre+'-q').value)||0;
+  var p=parseFloat(document.getElementById(pre+'-p').value)||0;
+  var el=document.getElementById(pre+'-tot');
+  if(el) el.textContent=fmt(q*p);
+}
+
+// ════════════════════════════════════════
+// COMPRAS
+// ════════════════════════════════════════
+function rCompras() {
+  var f=(document.getElementById('fs-c').value||'').toLowerCase();
+  var data=DB.com.slice().sort(function(a,b){return (b.f||'').localeCompare(a.f||'');}).filter(function(c){return !f||(c.pr+c.ref).toLowerCase().includes(f);});
+  document.getElementById('tb-c').innerHTML = !data.length
+    ? '<tr><td colspan="8"><div class="empty"><div class="ei">📥</div><h3>Sin compras</h3></div></td></tr>'
+    : data.map(function(c){return '<tr><td style="font-family:\'DM Mono\',monospace;font-size:12px">'+c.f+'</td><td><span class="badge bb">'+c.ti+'</span></td><td><span class="stag">'+c.ref+'</span></td><td>'+c.pr+'</td><td>'+c.q+'</td><td style="font-family:\'DM Mono\',monospace">'+fmt(c.pu)+'</td><td style="font-family:\'DM Mono\',monospace;font-weight:600;color:var(--accent)">'+fmt(c.tot)+'</td><td style="font-size:12px;color:var(--muted)">'+(c.n||'-')+'</td></tr>';}).join('');
+}
+
+function saveCompra() {
+  var ti=document.getElementById('mc-t').value, ref=document.getElementById('mc-ref').value;
+  var pr=document.getElementById('mc-pr').value.trim(), f=document.getElementById('mc-f').value;
+  var q=parseInt(document.getElementById('mc-q').value)||1, pu=parseFloat(document.getElementById('mc-p').value)||0;
+  if(!ref||!pr||!f||pu<=0){toast('Completa todos los campos','e');return;}
+  var c={id:gid(),ti:ti,ref:ref,pr:pr,f:f,q:q,pu:pu,tot:q*pu,n:document.getElementById('mc-n').value.trim()};
+  if(ti==='repuesto'){var r=DB.rep.find(function(x){return x.cd===ref;});if(r)r.st+=q;}
+  if(ti==='herramienta'){var h=DB.her.find(function(x){return x.cd===ref;});if(h)h.st+=q;}
+  DB.com.push(c);
+  addAct('Compra: '+ti+' '+ref+' ×'+q+' de '+pr+' '+fmt(c.tot),'y');
+  toast('Compra registrada');closeM('compra');rCompras();
+}
+
+// ════════════════════════════════════════
+// VENTAS
+// ════════════════════════════════════════
+function rVentas() {
+  var f=(document.getElementById('fs-v').value||'').toLowerCase();
+  var data=DB.ven.slice().sort(function(a,b){return (b.f||'').localeCompare(a.f||'');}).filter(function(v){return !f||(v.cl+v.ref).toLowerCase().includes(f);});
+  document.getElementById('tb-v').innerHTML = !data.length
+    ? '<tr><td colspan="8"><div class="empty"><div class="ei">📤</div><h3>Sin ventas</h3></div></td></tr>'
+    : data.map(function(v){return '<tr><td style="font-family:\'DM Mono\',monospace;font-size:12px">'+v.f+'</td><td><span class="badge bg">'+v.ti+'</span></td><td><span class="stag">'+v.ref+'</span></td><td>'+v.cl+'</td><td>'+v.q+'</td><td style="font-family:\'DM Mono\',monospace">'+fmt(v.pu)+'</td><td style="font-family:\'DM Mono\',monospace;font-weight:600;color:var(--green)">'+fmt(v.tot)+'</td><td style="font-size:12px;color:var(--muted)">'+(v.n||'-')+'</td></tr>';}).join('');
+}
+
+function saveVenta() {
+  var ti=document.getElementById('mv-t').value, ref=document.getElementById('mv-ref').value;
+  var cl=document.getElementById('mv-cl').value.trim(), f=document.getElementById('mv-f').value;
+  var q=parseInt(document.getElementById('mv-q').value)||1, pu=parseFloat(document.getElementById('mv-p').value)||0;
+  if(!ref||!cl||!f||pu<=0){toast('Completa todos los campos','e');return;}
+  if(ti==='repuesto'){var r=DB.rep.find(function(x){return x.cd===ref;});if(r&&r.st<q){toast('Stock insuficiente: '+r.st+' uds','e');return;}}
+  if(ti==='herramienta'){var h=DB.her.find(function(x){return x.cd===ref;});if(h&&h.st<q){toast('Stock insuficiente','e');return;}}
+  if(ti==='motor'){var m=DB.mot.find(function(x){return x.s===ref;});if(m&&m.es!=='disponible'){toast('Motor no disponible','e');return;}}
+  var v={id:gid(),ti:ti,ref:ref,cl:cl,f:f,q:q,pu:pu,tot:q*pu,n:document.getElementById('mv-n').value.trim()};
+  if(ti==='repuesto'){var r2=DB.rep.find(function(x){return x.cd===ref;});if(r2)r2.st-=q;}
+  if(ti==='herramienta'){var h2=DB.her.find(function(x){return x.cd===ref;});if(h2)h2.st-=q;}
+  if(ti==='motor'){var m2=DB.mot.find(function(x){return x.s===ref;});if(m2)m2.es='vendido';}
+  DB.ven.push(v);
+  addAct('Venta: '+ti+' '+ref+' a '+cl+' '+fmt(v.tot),'g');
+  toast('Venta registrada');closeM('venta');rVentas();
+}
+
+// ════════════════════════════════════════
+// REPORTES
+// ════════════════════════════════════════
+function rReportes() {
+  var tc=DB.com.reduce(function(s,c){return s+(c.tot||0);},0);
+  var tv=DB.ven.reduce(function(s,v){return s+(v.tot||0);},0);
+  var ut=tv-tc;
+  document.getElementById('rp-tc').textContent=fmt(tc);
+  document.getElementById('rp-tv').textContent=fmt(tv);
+  document.getElementById('rp-nc').textContent=DB.com.length+' trans.';
+  document.getElementById('rp-nv').textContent=DB.ven.length+' trans.';
+  var ue=document.getElementById('rp-ut');
+  ue.textContent=fmt(ut);ue.style.color=ut>=0?'var(--green)':'var(--red)';
+  var mv=DB.mot.filter(function(m){return m.es==='disponible';}).reduce(function(s,m){return s+(m.pv||0);},0);
+  var rv=DB.rep.reduce(function(s,r){return s+((r.pr||0)*(r.st||0));},0);
+  var hv=DB.her.reduce(function(s,h){return s+((h.pr||0)*(h.st||0));},0);
+  document.getElementById('rp-inv').innerHTML='<div class="dr"><span class="dlb">Motores disponibles</span><span style="color:var(--accent)">'+fmt(mv)+'</span></div><div class="dr"><span class="dlb">Repuestos en stock</span><span style="color:var(--blue)">'+fmt(rv)+'</span></div><div class="dr"><span class="dlb">Herramientas</span><span style="color:var(--muted)">'+fmt(hv)+'</span></div><div class="dr" style="border-top:2px solid var(--accent);margin-top:4px"><span style="font-weight:600">TOTAL INVENTARIO</span><span style="color:var(--accent);font-size:18px">'+fmt(mv+rv+hv)+'</span></div>';
+  var mm={};
+  DB.ven.filter(function(v){return v.ti==='motor';}).forEach(function(v){mm[v.ref]=(mm[v.ref]||0)+v.tot;});
+  var top=Object.entries(mm).sort(function(a,b){return b[1]-a[1];}).slice(0,5);
+  var te=document.getElementById('rp-top');
+  if(!top.length){te.innerHTML='<div class="empty"><p>Sin ventas de motores</p></div>';}
+  else te.innerHTML=top.map(function(e,i){var s=e[0],t=e[1];var m=DB.mot.find(function(x){return x.s===s;});return '<div class="dr"><span class="dlb"><b style="color:var(--accent)">#'+(i+1)+'</b> <span class="stag">'+s+'</span> '+(m?m.ma+' '+m.mo:'')+'</span><span style="color:var(--green)">'+fmt(t)+'</span></div>';}).join('');
+}
+
+// ════════════════════════════════════════
+// MODALES
+// ════════════════════════════════════════
+function openM(tipo) {
+  EID = null;
+  if(tipo==='motor'){
+    ['mm-s','mm-ma','mm-mo','mm-p','mm-r','mm-v','mm-pc','mm-pv','mm-n'].forEach(function(id){document.getElementById(id).value='';});
+    document.getElementById('mm-t').value='trifasico';document.getElementById('mm-e').value='disponible';
+    document.getElementById('mt-m').textContent='NUEVO MOTOR';
+  } else if(tipo==='repuesto'){
+    ['mr-c','mr-n','mr-co','mr-st','mr-sm','mr-p','mr-pr','mr-no'].forEach(function(id){document.getElementById(id).value='';});
+  } else if(tipo==='herramienta'){
+    ['mh-c','mh-n','mh-ma','mh-st','mh-p','mh-u','mh-no'].forEach(function(id){document.getElementById(id).value='';});
+    document.getElementById('mh-e').value='disponible';
+  } else if(tipo==='compra'){
+    document.getElementById('mc-f').value=tod();document.getElementById('mc-q').value='1';
+    document.getElementById('mc-p').value='';document.getElementById('mc-pr').value='';
+    document.getElementById('mc-n').value='';document.getElementById('mc-tot').textContent='$0';
+    fillRef('mc-ref','mc-t',false);
+  } else if(tipo==='venta'){
+    document.getElementById('mv-f').value=tod();document.getElementById('mv-q').value='1';
+    document.getElementById('mv-p').value='';document.getElementById('mv-cl').value='';
+    document.getElementById('mv-n').value='';document.getElementById('mv-tot').textContent='$0';
+    fillRef('mv-ref','mv-t',true);
+  }
+  document.getElementById('mo-'+tipo).classList.add('open');
+}
+
+function closeM(tipo) {
+  document.getElementById('mo-'+tipo).classList.remove('open');
+  EID = null;
+}
+
+document.querySelectorAll('.mo').forEach(function(ov){
+  ov.addEventListener('click',function(e){
+    if(e.target===ov){ closeM(ov.id.replace('mo-','')); }
+  });
+});
+
+// ════════════════════════════════════════
+// DELETE / CSV
+// ════════════════════════════════════════
+var _delPending = null;
+function delIt(col, id, lbl) {
+  _delPending = {col:col, id:id, lbl:lbl};
+  document.getElementById('del-msg').textContent = 'Eliminar este '+lbl+'. Esta acción no se puede deshacer.';
+  document.getElementById('mo-del').classList.add('open');
+}
+function confirmDel() {
+  document.getElementById('mo-del').classList.remove('open');
+  if(!_delPending)return;
+  var col=_delPending.col, id=_delPending.id, lbl=_delPending.lbl;
+  DB[col]=DB[col].filter(function(x){return x.id!==id;});
+  toast(lbl+' eliminado','w');
+  if(col==='mot')rMotores();else if(col==='rep')rRepuestos();else if(col==='her')rHerramientas();
+  _delPending=null;
+}
+function cancelDel() {
+  document.getElementById('mo-del').classList.remove('open');
+  _delPending=null;
+}
+
+function exportCSV() {
+  var rows=['Fecha,Tipo,Referencia,Contacto,Cantidad,PrecioUnit,Total'];
+  DB.ven.forEach(function(v){rows.push([v.f,'venta',v.ref,v.cl,v.q,v.pu,v.tot].join(','));});
+  DB.com.forEach(function(c){rows.push([c.f,'compra',c.ref,c.pr,c.q,c.pu,c.tot].join(','));});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));
+  a.download='motorstock_'+tod()+'.csv';a.click();
+  toast('CSV exportado');
+}
+
+// ════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════
+function toast(msg, type) {
+  var c=document.getElementById('tc');
+  var t=document.createElement('div');
+  t.className='toast'+(type==='e'?' e':type==='w'?' w':'');
+  t.textContent=(type==='e'?'❌ ':type==='w'?'⚠️ ':'✅ ')+msg;
+  c.appendChild(t);
+  setTimeout(function(){t.remove();},3200);
+}
+</script>
+</body>
+</html>
