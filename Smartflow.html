@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SmartFlow Automatización – Portafolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #0b2545;
+      --navy-mid: #163d6e;
+      --green: #2db84b;
+      --green-light: #3fd45f;
+      --green-dim: rgba(45,184,75,0.12);
+      --white: #f4f8ff;
+      --gray: #8fa3bc;
+      --card-bg: rgba(255,255,255,0.04);
+      --border: rgba(45,184,75,0.18);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--navy);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE TEXTURE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0; opacity: .5;
+    }
+
+    /* ── HERO ── */
+    header {
+      position: relative;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 4rem 2rem 6rem;
+      overflow: hidden;
+    }
+
+    .hero-glow {
+      position: absolute;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(45,184,75,0.22) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .hero-dots {
+      position: absolute; inset: 0;
+      background-image: radial-gradient(circle, rgba(45,184,75,0.25) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .logo-wrap {
+      display: flex; align-items: center; gap: 1.2rem;
+      margin-bottom: 2.5rem;
+      animation: fadeUp .8s ease both;
+    }
+
+    .logo-icon {
+      width: 64px; height: 64px;
+    }
+
+    .logo-text h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.6rem; font-weight: 800;
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+
+    .logo-text h1 span { color: var(--green); }
+
+    .logo-text p {
+      font-size: .9rem; font-weight: 300;
+      color: var(--gray); margin-top: .2rem;
+      letter-spacing: .04em;
+    }
+
+    .hero-tagline {
+      text-align: center;
+      animation: fadeUp .8s .15s ease both;
+    }
+
+    .hero-tagline h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.8rem);
+      font-weight: 800; line-height: 1.1;
+      max-width: 720px;
+    }
+
+    .hero-tagline h2 em {
+      font-style: normal;
+      background: linear-gradient(90deg, var(--green), #7ef9a0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-tagline p {
+      margin-top: 1.2rem;
+      font-size: 1.1rem; font-weight: 300;
+      color: var(--gray); max-width: 520px; margin-inline: auto;
+      line-height: 1.7;
+    }
+
+    .cta-row {
+      margin-top: 2.5rem;
+      display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+      animation: fadeUp .8s .3s ease both;
+    }
+
+    .btn {
+      padding: .8rem 2rem; border-radius: 999px;
+      font-family: 'Syne', sans-serif; font-size: .95rem; font-weight: 600;
+      cursor: pointer; text-decoration: none;
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .btn-primary {
+      background: var(--green);
+      color: #fff;
+      box-shadow: 0 0 24px rgba(45,184,75,.45);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(45,184,75,.65); }
+
+    .btn-ghost {
+      border: 1.5px solid var(--border);
+      color: var(--white);
+      background: transparent;
+    }
+    .btn-ghost:hover { border-color: var(--green); background: var(--green-dim); transform: translateY(-2px); }
+
+    .scroll-hint {
+      position: absolute; bottom: 2.5rem;
+      display: flex; flex-direction: column; align-items: center; gap: .5rem;
+      font-size: .75rem; color: var(--gray); letter-spacing: .1em; text-transform: uppercase;
+      animation: fadeUp .8s .5s ease both;
+    }
+    .scroll-line {
+      width: 1.5px; height: 40px;
+      background: linear-gradient(to bottom, var(--green), transparent);
+      animation: pulse-line 2s ease-in-out infinite;
+    }
+
+    /* ── SECTION SHARED ── */
+    section {
+      position: relative; z-index: 1;
+      padding: 6rem 2rem;
+      max-width: 1100px; margin-inline: auto;
+    }
+
+    .section-label {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-size: .75rem; letter-spacing: .15em; text-transform: uppercase;
+      color: var(--green); font-weight: 600; margin-bottom: 1rem;
+    }
+    .section-label::before {
+      content: ''; width: 24px; height: 1.5px; background: var(--green);
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 800; line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+
+    .section-desc {
+      color: var(--gray); font-size: 1rem; font-weight: 300;
+      line-height: 1.7; max-width: 560px; margin-bottom: 3rem;
+    }
+
+    /* ── SERVICES GRID ── */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .service-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem 1.8rem;
+      position: relative; overflow: hidden;
+      transition: transform .25s, border-color .25s, box-shadow .25s;
+    }
+    .service-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--green), transparent);
+      opacity: 0; transition: opacity .25s;
+    }
+    .service-card:hover { transform: translateY(-4px); border-color: rgba(45,184,75,.4); box-shadow: 0 16px 48px rgba(0,0,0,.3); }
+    .service-card:hover::before { opacity: 1; }
+
+    .service-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: var(--green-dim); display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1.2rem; font-size: 1.5rem;
+    }
+
+    .service-card h3 {
+      font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700;
+      margin-bottom: .6rem;
+    }
+    .service-card p {
+      color: var(--gray); font-size: .9rem; line-height: 1.65; font-weight: 300;
+    }
+
+    /* ── PROJECTS ── */
+    .projects-stack {
+      display: flex; flex-direction: column; gap: 4rem;
+    }
+
+    .project-item {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem; align-items: center;
+    }
+    .project-item.reverse { direction: rtl; }
+    .project-item.reverse > * { direction: ltr; }
+
+    .project-visual {
+      border-radius: 20px; overflow: hidden;
+      border: 1px solid var(--border);
+      position: relative;
+      box-shadow: 0 24px 64px rgba(0,0,0,.45);
+      aspect-ratio: 4/3;
+      background: var(--navy-mid);
+    }
+
+    .project-visual img {
+      width: 100%; height: 100%; object-fit: cover;
+      display: block;
+    }
+
+    /* Mockup screenshots — placeholder panels */
+    .mockup {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      background: #0d1f35;
+      font-family: monospace;
+    }
+
+    .mockup-bar {
+      padding: .6rem 1rem;
+      background: rgba(255,255,255,.05);
+      display: flex; align-items: center; gap: .5rem;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.r { background: #ff5f57; }
+    .dot.y { background: #febc2e; }
+    .dot.g { background: var(--green); }
+
+    .mockup-body {
+      flex: 1; padding: 1.2rem; overflow: hidden;
+    }
+
+    /* CRM mockup */
+    .crm-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .crm-title { font-size: .7rem; color: var(--white); font-weight: 600; letter-spacing: .05em; }
+    .crm-badge { font-size: .6rem; background: var(--green-dim); color: var(--green); padding: .2rem .5rem; border-radius: 999px; border: 1px solid rgba(45,184,75,.3); }
+
+    .crm-table { width: 100%; border-collapse: collapse; }
+    .crm-table th { font-size: .55rem; color: var(--gray); text-transform: uppercase; letter-spacing: .08em; padding: .3rem .5rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,.07); }
+    .crm-table td { font-size: .6rem; color: var(--white); padding: .35rem .5rem; border-bottom: 1px solid rgba(255,255,255,.04); }
+    .status { display: inline-block; padding: .15rem .45rem; border-radius: 999px; font-size: .55rem; }
+    .status.active { background: rgba(45,184,75,.15); color: var(--green); }
+    .status.pending { background: rgba(254,188,46,.15); color: #febc2e; }
+    .status.closed { background: rgba(255,95,87,.15); color: #ff5f57; }
+
+    /* Scraper mockup */
+    .scraper-row { display: flex; gap: .4rem; margin-bottom: .6rem; }
+    .scraper-input {
+      flex: 1; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12);
+      border-radius: 6px; padding: .3rem .6rem; font-size: .6rem; color: var(--gray);
+    }
+    .scraper-btn {
+      background: var(--green); color: #fff; border: none; border-radius: 6px;
+      padding: .3rem .7rem; font-size: .6rem; cursor: pointer;
+    }
+    .scraper-list { list-style: none; }
+    .scraper-list li {
+      font-size: .58rem; color: var(--gray); padding: .25rem 0;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+      display: flex; align-items: center; gap: .4rem;
+    }
+    .scraper-list li::before { content: '→'; color: var(--green); font-size: .65rem; }
+    .scraper-count { font-size: .65rem; color: var(--green); margin-top: .5rem; font-weight: 600; }
+
+    /* Chatbot mockup */
+    .chat-header {
+      text-align: center; padding: .5rem 1rem;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+    .chat-header-title { font-size: .65rem; font-weight: 600; color: var(--white); }
+    .chat-online { font-size: .55rem; color: var(--green); display: flex; align-items: center; justify-content: center; gap: .3rem; margin-top: .15rem; }
+    .online-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: blink 1.5s ease-in-out infinite; }
+    .chat-body { flex: 1; padding: .8rem; display: flex; flex-direction: column; gap: .5rem; overflow: hidden; }
+    .bubble {
+      max-width: 80%; padding: .5rem .75rem; border-radius: 12px;
+      font-size: .62rem; line-height: 1.4;
+    }
+    .bubble.bot { background: rgba(45,184,75,.15); border: 1px solid rgba(45,184,75,.25); color: var(--white); align-self: flex-start; }
+    .bubble.user { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.12); color: var(--white); align-self: flex-end; }
+    .chat-input-bar {
+      padding: .5rem .8rem;
+      border-top: 1px solid rgba(255,255,255,.07);
+      display: flex; gap: .5rem;
+    }
+    .chat-input {
+      flex: 1; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12);
+      border-radius: 999px; padding: .3rem .75rem; font-size: .6rem; color: var(--gray);
+    }
+    .chat-send {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--green); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .chat-send svg { width: 12px; height: 12px; fill: white; }
+
+    .project-info { display: flex; flex-direction: column; gap: 1rem; }
+
+    .project-number {
+      font-family: 'Syne', sans-serif;
+      font-size: 5rem; font-weight: 800; line-height: 1;
+      color: rgba(45,184,75,.12);
+      user-select: none;
+    }
+
+    .project-tag {
+      display: inline-block;
+      font-size: .72rem; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--green); font-weight: 600;
+    }
+
+    .project-name {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.4rem, 3vw, 2.2rem); font-weight: 800; line-height: 1.2;
+    }
+
+    .project-desc {
+      color: var(--gray); font-size: .95rem; font-weight: 300; line-height: 1.75;
+    }
+
+    .project-pills {
+      display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .5rem;
+    }
+    .pill {
+      padding: .3rem .85rem; border-radius: 999px;
+      border: 1px solid var(--border);
+      font-size: .75rem; color: var(--gray);
+      background: var(--green-dim);
+    }
+
+    /* ── CONTACT ── */
+    .contact-wrap {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 4rem;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .contact-wrap::before {
+      content: '';
+      position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(45,184,75,.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .contact-wrap h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.6rem, 3vw, 2.6rem); font-weight: 800;
+      margin-bottom: .8rem;
+    }
+    .contact-wrap p {
+      color: var(--gray); font-weight: 300; max-width: 440px; margin-inline: auto;
+      margin-bottom: 2rem; line-height: 1.7;
+    }
+
+    .contact-email {
+      display: inline-flex; align-items: center; gap: .6rem;
+      font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 600;
+      color: var(--white); text-decoration: none;
+      border-bottom: 1.5px solid var(--green);
+      padding-bottom: .15rem;
+      transition: color .2s;
+    }
+    .contact-email:hover { color: var(--green); }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid rgba(255,255,255,.06);
+      padding: 2rem;
+      text-align: center;
+      font-size: .8rem; color: var(--gray); font-weight: 300;
+    }
+    footer span { color: var(--green); }
+
+    /* ── DIVIDER ── */
+    .divider {
+      width: 100%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 0 auto;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse-line {
+      0%, 100% { opacity: .4; }
+      50%       { opacity: 1; }
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: .3; }
+    }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(32px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-left { opacity: 0; transform: translateX(-32px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal-left.visible { opacity: 1; transform: translateX(0); }
+    .reveal-right { opacity: 0; transform: translateX(32px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .project-item { grid-template-columns: 1fr; direction: ltr !important; gap: 2rem; }
+      .project-item.reverse > * { direction: ltr; }
+      .contact-wrap { padding: 2.5rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════ HERO ══════════ -->
+<header>
+  <div class="hero-glow"></div>
+  <div class="hero-dots"></div>
+
+  <div class="logo-wrap">
+    <!-- SVG del logo SmartFlow recreado con los colores de la marca -->
+    <svg class="logo-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="12" r="7" fill="#2db84b"/>
+      <circle cx="32" cy="26" r="5" fill="#2db84b" opacity=".7"/>
+      <circle cx="48" cy="40" r="7" fill="#163d6e" stroke="#2db84b" stroke-width="2"/>
+      <circle cx="16" cy="52" r="7" fill="#0b2545" stroke="#2db84b" stroke-width="2"/>
+      <path d="M16 19 Q16 26 32 26 Q48 26 48 33" stroke="#2db84b" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      <path d="M48 47 Q48 52 32 52 Q16 52 16 45" stroke="#163d6e" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    </svg>
+    <div class="logo-text">
+      <h1>Smart<span>Flow</span></h1>
+      <p>Automatización</p>
+    </div>
+  </div>
+
+  <div class="hero-tagline">
+    <h2>Automatiza tu negocio.<br/><em>Impulsa tu futuro.</em></h2>
+    <p>Soluciones tecnológicas de alto impacto: CRM a medida, automatizaciones inteligentes, chatbots y web scraping empresarial.</p>
+  </div>
+
+  <div class="cta-row">
+    <a href="#proyectos" class="btn btn-primary">Ver proyectos</a>
+    <a href="#contacto" class="btn btn-ghost">Contáctanos</a>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Explorar</span>
+    <div class="scroll-line"></div>
+  </div>
+</header>
+
+<div class="divider"></div>
+
+<!-- ══════════ SERVICIOS ══════════ -->
+<section id="servicios">
+  <div class="reveal">
+    <div class="section-label">Lo que hacemos</div>
+    <h2 class="section-title">Nuestros servicios</h2>
+    <p class="section-desc">Desarrollamos productos digitales adaptados a tu modelo de negocio, eliminando fricciones y multiplicando tu eficiencia.</p>
+  </div>
+
+  <div class="services-grid">
+    <div class="service-card reveal" style="transition-delay:.05s">
+      <div class="service-icon">🧩</div>
+      <h3>CRM Personalizado</h3>
+      <p>Sistemas a medida para gestión de clientes, seguimiento de oportunidades y control de procesos comerciales.</p>
+    </div>
+    <div class="service-card reveal" style="transition-delay:.1s">
+      <div class="service-icon">⚡</div>
+      <h3>Automatización de Procesos</h3>
+      <p>Elimina tareas repetitivas y reduce tiempos operativos con flujos inteligentes adaptados a tu equipo.</p>
+    </div>
+    <div class="service-card reveal" style="transition-delay:.15s">
+      <div class="service-icon">🤖</div>
+      <h3>Chatbots Inteligentes</h3>
+      <p>Atención automatizada 24/7 con integración a CRM y almacenamiento estructurado de cada conversación.</p>
+    </div>
+    <div class="service-card reveal" style="transition-delay:.2s">
+      <div class="service-icon">🌐</div>
+      <h3>Web Scraping</h3>
+      <p>Extracción automática de datos desde cualquier fuente web, estructurados y listos para análisis.</p>
+    </div>
+    <div class="service-card reveal" style="transition-delay:.25s">
+      <div class="service-icon">🖥️</div>
+      <h3>Infraestructura VPS</h3>
+      <p>Despliegue y gestión de APIs, servicios backend y entornos productivos seguros en Linux.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════ PROYECTOS ══════════ -->
+<section id="proyectos">
+  <div class="reveal">
+    <div class="section-label">Galería</div>
+    <h2 class="section-title">Proyectos realizados</h2>
+    <p class="section-desc">Una muestra de las soluciones que hemos construido para nuestros clientes.</p>
+  </div>
+
+  <div class="projects-stack">
+
+    <!-- Proyecto 1: CRM -->
+    <div class="project-item">
+      <div class="project-visual reveal-left">
+        <!-- CRM Mockup -->
+        <div class="mockup">
+          <div class="mockup-bar">
+            <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+            <span style="margin-left:.5rem;font-size:.6rem;color:var(--gray)">EZpermitsTX – CRM</span>
+          </div>
+          <div class="mockup-body">
+            <div class="crm-header">
+              <span class="crm-title">📋 Gestión de Casos</span>
+              <span class="crm-badge">● En vivo</span>
+            </div>
+            <table class="crm-table">
+              <thead>
+                <tr>
+                  <th>ID</th><th>Cliente</th><th>Tipo</th><th>Ruta</th><th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>#1042</td><td>Rodríguez E.</td><td>Residencial</td><td>Norte → Sur</td><td><span class="status active">Activo</span></td></tr>
+                <tr><td>#1041</td><td>Martínez C.</td><td>Comercial</td><td>Este → Centro</td><td><span class="status pending">Pendiente</span></td></tr>
+                <tr><td>#1040</td><td>López M.</td><td>Industrial</td><td>Sur → Oeste</td><td><span class="status closed">Cerrado</span></td></tr>
+                <tr><td>#1039</td><td>García P.</td><td>Residencial</td><td>Norte → Este</td><td><span class="status active">Activo</span></td></tr>
+                <tr><td>#1038</td><td>Torres J.</td><td>Comercial</td><td>Centro → Sur</td><td><span class="status pending">Pendiente</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-info reveal-right">
+        <div class="project-number">01</div>
+        <div class="project-tag">CRM · Gestión Operativa</div>
+        <h3 class="project-name">Sistema CRM para EZpermitsTX</h3>
+        <p class="project-desc">
+          Plataforma completa para manejo de casos internos, administración de usuarios, clasificación de solicitudes y generación automática de rutas de transporte para cada caso. Centraliza toda la operación en una sola interfaz.
+        </p>
+        <div class="project-pills">
+          <span class="pill">Gestión de usuarios</span>
+          <span class="pill">Clasificación de casos</span>
+          <span class="pill">Rutas de transporte</span>
+          <span class="pill">Dashboard en tiempo real</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Proyecto 2: Scraper -->
+    <div class="project-item reverse">
+      <div class="project-visual reveal-right">
+        <div class="mockup">
+          <div class="mockup-bar">
+            <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+            <span style="margin-left:.5rem;font-size:.6rem;color:var(--gray)">Scraper SICE-TAC</span>
+          </div>
+          <div class="mockup-body">
+            <div class="scraper-row">
+              <div class="scraper-input">Fecha: 2026 / 03 / 02</div>
+              <button class="scraper-btn">▶ Iniciar</button>
+            </div>
+            <ul class="scraper-list">
+              <li>AGUACHICA-CESAR → MALAMBO - ATLANTICO</li>
+              <li>ARMENIA → BOGOTÁ</li>
+              <li>ARMENIA → BUCARAMANGA</li>
+              <li>BARRANCABERMEJA → BOGOTÁ</li>
+              <li>BARRANCABERMEJA → BUCARAMANGA</li>
+              <li>BARRANQUILLA → BOGOTÁ</li>
+              <li>BARRANQUILLA → CALI</li>
+            </ul>
+            <div class="scraper-count">714 rutas detectadas ✓</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-info reveal-left">
+        <div class="project-number">02</div>
+        <div class="project-tag">Web Scraping · Ministerio de Transporte</div>
+        <h3 class="project-name">Automatización SICE-TAC</h3>
+        <p class="project-desc">
+          Herramienta especializada que captura y consolida datos del Ministerio de Transporte de Colombia de forma automática. Permite estructurar la información de 700+ rutas y generar presupuestos en minutos, eliminando horas de trabajo manual.
+        </p>
+        <div class="project-pills">
+          <span class="pill">Web Scraping</span>
+          <span class="pill">714 rutas</span>
+          <span class="pill">Exportación CSV</span>
+          <span class="pill">Consolidado automático</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Proyecto 3: Chatbot -->
+    <div class="project-item">
+      <div class="project-visual reveal-left">
+        <div class="mockup" style="height:100%;">
+          <div class="mockup-bar">
+            <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+            <span style="margin-left:.5rem;font-size:.6rem;color:var(--gray)">Chat SmartFlow</span>
+          </div>
+          <div class="chat-header">
+            <div class="chat-header-title">Chat con Asistente de SmartFlow</div>
+            <div class="chat-online"><div class="online-dot"></div> Conectado</div>
+          </div>
+          <div class="chat-body">
+            <div class="bubble bot">¡Hola! Soy el asistente de SmartFlow. ¿En qué puedo ayudarte hoy?</div>
+            <div class="bubble user">Hola, quiero información sobre automatizaciones.</div>
+            <div class="bubble bot">¡Con gusto! Desarrollamos flujos personalizados para tu negocio. ¿Me puedes dar tu nombre y empresa para registrar tu consulta?</div>
+            <div class="bubble user">Soy Carlos de LogiTrans.</div>
+            <div class="bubble bot">Perfecto, Carlos 👋 Tus datos quedan registrados. Un asesor te contactará pronto.</div>
+          </div>
+          <div class="chat-input-bar">
+            <div class="chat-input">Escribe tu mensaje...</div>
+            <button class="chat-send">
+              <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-info reveal-right">
+        <div class="project-number">03</div>
+        <div class="project-tag">IA · Atención al Cliente</div>
+        <h3 class="project-name">Chatbot SmartFlow</h3>
+        <p class="project-desc">
+          Asistente conversacional inteligente para atención automatizada de clientes. Captura y almacena información clave de cada usuario, se integra con el CRM y garantiza respuestas instantáneas las 24 horas.
+        </p>
+        <div class="project-pills">
+          <span class="pill">IA conversacional</span>
+          <span class="pill">Integración CRM</span>
+          <span class="pill">Captura de leads</span>
+          <span class="pill">Disponible 24/7</span>
+        </div>
+        <a href="http://69.62.69.98:5678/webhook/chatbot" target="_blank" class="btn btn-ghost" style="width:fit-content;margin-top:.5rem;">Ver demo →</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════ CONTACTO ══════════ -->
+<section id="contacto">
+  <div class="contact-wrap reveal">
+    <div class="section-label" style="justify-content:center">Hablemos</div>
+    <h2>¿Listo para automatizar<br/>tu negocio?</h2>
+    <p>Cuéntanos tu idea o el problema que quieres resolver. Construimos la solución exacta que tu empresa necesita.</p>
+    <a href="mailto:Carlosrp1918@gmail.com" class="contact-email">
+      ✉ Carlosrp1918@gmail.com
+    </a>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 <span>SmartFlow Automatización</span> — Automatiza tu negocio. Impulsa tu futuro.</p>
+</footer>
+
+<script>
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
