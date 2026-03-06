@@ -151,6 +151,94 @@ tr:hover td{background:rgba(255,255,255,.015)}
 ::-webkit-scrollbar{width:5px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+  /* Login */
+  #login-screen { flex-direction: column; overflow-y: auto; }
+  .ll { display: none; }
+  .lr { width: 100%; min-height: 100vh; padding: 40px 28px; justify-content: flex-start; padding-top: 60px; }
+  .ltitle { font-size: 26px; }
+
+  /* Sidebar → bottom nav on mobile */
+  .sidebar {
+    top: auto; left: 0; right: 0; bottom: 0; width: 100%;
+    height: 60px; flex-direction: row; border-right: none;
+    border-top: 1px solid var(--border); z-index: 200;
+  }
+  .slogo { display: none; }
+  .suser { display: none; }
+  .snav {
+    flex: 1; display: flex; flex-direction: row;
+    padding: 0; overflow-x: auto; overflow-y: hidden;
+    scrollbar-width: none;
+  }
+  .snav::-webkit-scrollbar { display: none; }
+  .ni {
+    flex-direction: column; gap: 2px; padding: 8px 12px;
+    font-size: 10px; border-left: none; border-top: 3px solid transparent;
+    min-width: 58px; align-items: center; white-space: nowrap;
+  }
+  .ni.active { border-left: none; border-top-color: var(--accent); background: rgba(240,165,0,0.07); }
+  .ni .ic { font-size: 20px; width: auto; }
+  .ni.locked::after { display: none; }
+  .sfoot { display: none; }
+
+  /* Floating user bar on mobile */
+  #mobile-topbar {
+    display: flex !important;
+    position: fixed; top: 0; left: 0; right: 0; height: 52px;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    align-items: center; padding: 0 16px; gap: 10px; z-index: 150;
+  }
+
+  /* Main content */
+  .main { margin-left: 0; padding: 16px; padding-top: 68px; padding-bottom: 76px; }
+
+  /* Stats grid → 2 cols */
+  .sgrid { grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
+  .sc { padding: 14px; }
+  .sv { font-size: 28px; }
+
+  /* Dashboard grid → 1 col */
+  .dgrid { grid-template-columns: 1fr; gap: 14px; }
+
+  /* Page header */
+  .ph { margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+  .ptitle { font-size: 26px; }
+  .btn { padding: 8px 14px; font-size: 13px; }
+
+  /* Table → card layout */
+  .tbox { border-radius: 8px; }
+  .tbar { padding: 10px 12px; gap: 8px; }
+  .ts { max-width: 100%; min-width: 0; font-size: 13px; }
+
+  table thead { display: none; }
+  table, tbody, tr, td { display: block; width: 100%; }
+  tr { border: 1px solid var(--border); border-radius: 8px; margin: 8px 12px; width: calc(100% - 24px); padding: 10px 0; background: var(--surface2); }
+  tr:hover td { background: transparent; }
+  td { border-top: none; padding: 5px 14px; font-size: 13px; display: flex; align-items: center; justify-content: space-between; }
+  td::before { content: attr(data-label); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); flex-shrink: 0; margin-right: 8px; }
+  td:first-child { padding-top: 10px; }
+  td:last-child { padding-bottom: 10px; border-top: 1px solid var(--border); margin-top: 6px; padding-top: 10px; }
+
+  /* Modal */
+  .modal { margin: 12px; padding: 20px; border-radius: 10px; max-height: 85vh; }
+  .fg2 { grid-template-columns: 1fr; }
+  .fg.f { grid-column: 1; }
+
+  /* Report grid */
+  #page-reportes .sgrid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 400px) {
+  .sgrid { grid-template-columns: 1fr; }
+  .ni { min-width: 48px; padding: 8px 6px; font-size: 9px; }
+}
+
+/* Mobile topbar hidden by default */
+#mobile-topbar { display: none; }
+
 </style>
 </head>
 <body>
@@ -212,6 +300,14 @@ tr:hover td{background:rgba(255,255,255,.015)}
 
 <!-- APP -->
 <div id="app">
+
+  <!-- Mobile top bar -->
+  <div id="mobile-topbar">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--accent)">MOTORSTOCK</div>
+    <div style="flex:1"></div>
+    <div id="mob-user" style="display:flex;align-items:center;gap:8px"></div>
+    <span onclick="doLogout()" title="Salir" style="font-size:20px;cursor:pointer;color:var(--muted);padding:4px">⏏</span>
+  </div>
   <aside class="sidebar">
     <div class="slogo"><h1>MOTOR<br>STOCK</h1><span>Sistema de Gestión</span></div>
     <div class="suser" id="suser"></div>
@@ -495,6 +591,8 @@ function initApp() {
     '<div class="suav '+CU.avc+'">'+CU.av+'</div>' +
     '<div style="flex:1"><div class="suname">'+CU.nom+'</div><div class="surole">'+CU.rol+'</div></div>' +
     '<span class="sout" onclick="doLogout()" title="Cerrar sesión">⏏</span>';
+  var mu = document.getElementById('mob-user');
+  if (mu) mu.innerHTML = '<div class="suav '+CU.avc+'" style="width:28px;height:28px;font-size:11px">'+CU.av+'</div><div style="font-size:13px;font-weight:600">'+CU.nom+'</div>';
 
   // Nav perms
   var pages = ['dashboard','motores','repuestos','herramientas','compras','ventas','reportes'];
@@ -606,7 +704,7 @@ function rMotores() {
   var ec = {disponible:'bg',vendido:'br',reparacion:'by',reservado:'bb'};
   document.getElementById('tb-m').innerHTML = !data.length
     ? '<tr><td colspan="9"><div class="empty"><div class="ei">🔧</div><h3>Sin motores</h3></div></td></tr>'
-    : data.map(function(m){ return '<tr><td><span class="stag">'+m.s+'</span></td><td>'+m.ma+'</td><td>'+m.mo+'</td><td>'+m.ti+'</td><td>'+(m.po||'-')+'</td><td style="font-family:\'DM Mono\',monospace">'+fmt(m.pc)+'</td><td style="font-family:\'DM Mono\',monospace;color:var(--green)">'+fmt(m.pv)+'</td><td><span class="badge '+(ec[m.es]||'bx')+'">'+m.es+'</span></td><td><div class="abts"><button class="btn btg bts" onclick="editMotor(\''+m.id+'\')">✏️</button><button class="btn btd bts" onclick="delIt(\'mot\',\''+m.id+'\',\'motor\')">🗑</button></div></td></tr>'; }).join('');
+    : data.map(function(m){ return '<tr><td data-label="Serial"><span class="stag">'+m.s+'</span></td><td data-label="Marca">'+m.ma+'</td><td data-label="Modelo">'+m.mo+'</td><td data-label="Tipo">'+m.ti+'</td><td data-label="Potencia">'+(m.po||'-')+'</td><td data-label="P.Compra" style="font-family:\'DM Mono\',monospace">'+fmt(m.pc)+'</td><td data-label="P.Venta" style="font-family:\'DM Mono\',monospace;color:var(--green)">'+fmt(m.pv)+'</td><td data-label="Estado"><span class="badge '+(ec[m.es]||'bx')+'">'+m.es+'</span></td><td data-label=""><div class="abts"><button class="btn btg bts" onclick="editMotor(\''+m.id+'\')">✏️</button><button class="btn btd bts" onclick="delIt(\'mot\',\''+m.id+'\',\'motor\')">🗑</button></div></td></tr>'; }).join('');
 }
 
 var EID = null;
@@ -642,7 +740,7 @@ function rRepuestos() {
   var data=DB.rep.filter(function(r){ return !f||(r.cd+r.nm+r.ct).toLowerCase().includes(f); });
   document.getElementById('tb-r').innerHTML = !data.length
     ? '<tr><td colspan="8"><div class="empty"><div class="ei">⚙️</div><h3>Sin repuestos</h3></div></td></tr>'
-    : data.map(function(r){ var bj=r.sm>0&&r.st<=r.sm; return '<tr><td><span class="stag">'+r.cd+'</span></td><td>'+r.nm+'</td><td>'+r.ct+'</td><td style="font-size:12px;color:var(--muted)">'+(r.co||'-')+'</td><td><span class="badge '+(bj?'br':r.st>10?'bg':'by')+'">'+r.st+'</span>'+(bj?' <small style="color:var(--red)">⚠️</small>':'')+'</td><td style="color:var(--muted)">'+(r.sm||0)+'</td><td style="font-family:\'DM Mono\',monospace">'+fmt(r.pr)+'</td><td><div class="abts"><button class="btn btg bts" onclick="editRep(\''+r.id+'\')">✏️</button><button class="btn btd bts" onclick="delIt(\'rep\',\''+r.id+'\',\'repuesto\')">🗑</button></div></td></tr>'; }).join('');
+    : data.map(function(r){ var bj=r.sm>0&&r.st<=r.sm; return '<tr><td data-label="Código"><span class="stag">'+r.cd+'</span></td><td data-label="Nombre">'+r.nm+'</td><td data-label="Categoría">'+r.ct+'</td><td data-label="Compatible" style="font-size:12px;color:var(--muted)">'+(r.co||'-')+'</td><td data-label="Stock"><span class="badge '+(bj?'br':r.st>10?'bg':'by')+'">'+r.st+'</span>'+(bj?' <small style="color:var(--red)">⚠️</small>':'')+'</td><td data-label="Mín." style="color:var(--muted)">'+(r.sm||0)+'</td><td data-label="Precio" style="font-family:\'DM Mono\',monospace">'+fmt(r.pr)+'</td><td data-label=""><div class="abts"><button class="btn btg bts" onclick="editRep(\''+r.id+'\')">✏️</button><button class="btn btd bts" onclick="delIt(\'rep\',\''+r.id+'\',\'repuesto\')">🗑</button></div></td></tr>'; }).join('');
 }
 
 function saveRepuesto() {
@@ -673,7 +771,7 @@ function rHerramientas() {
   var ec={disponible:'bg','en-uso':'bb',mantenimiento:'by','dañada':'br'};
   document.getElementById('tb-h').innerHTML = !data.length
     ? '<tr><td colspan="8"><div class="empty"><div class="ei">🔩</div><h3>Sin herramientas</h3></div></td></tr>'
-    : data.map(function(h){return '<tr><td><span class="stag">'+h.cd+'</span></td><td>'+h.nm+'</td><td>'+h.ct+'</td><td>'+(h.ma||'-')+'</td><td><span class="badge '+(h.st>0?'bg':'br')+'">'+h.st+'</span></td><td><span class="badge '+(ec[h.es]||'bx')+'">'+h.es+'</span></td><td style="font-family:\'DM Mono\',monospace">'+fmt(h.pr)+'</td><td><div class="abts"><button class="btn btg bts" onclick="editHer(\''+h.id+'\')">✏️</button><button class="btn btd bts" onclick="delIt(\'her\',\''+h.id+'\',\'herramienta\')">🗑</button></div></td></tr>';}).join('');
+    : data.map(function(h){return '<tr><td data-label="Código"><span class="stag">'+h.cd+'</span></td><td data-label="Nombre">'+h.nm+'</td><td data-label="Categoría">'+h.ct+'</td><td data-label="Marca">'+(h.ma||'-')+'</td><td data-label="Stock"><span class="badge '+(h.st>0?'bg':'br')+'">'+h.st+'</span></td><td data-label="Estado"><span class="badge '+(ec[h.es]||'bx')+'">'+h.es+'</span></td><td data-label="Precio" style="font-family:\'DM Mono\',monospace">'+fmt(h.pr)+'</td><td data-label=""><div class="abts"><button class="btn btg bts" onclick="editHer(\''+h.id+'\')">✏️</button><button class="btn btd bts" onclick="delIt(\'her\',\''+h.id+'\',\'herramienta\')">🗑</button></div></td></tr>';}).join('');
 }
 
 function saveHerramienta() {
@@ -742,7 +840,7 @@ function rCompras() {
   var data=DB.com.slice().sort(function(a,b){return (b.f||'').localeCompare(a.f||'');}).filter(function(c){return !f||(c.pr+c.ref).toLowerCase().includes(f);});
   document.getElementById('tb-c').innerHTML = !data.length
     ? '<tr><td colspan="8"><div class="empty"><div class="ei">📥</div><h3>Sin compras</h3></div></td></tr>'
-    : data.map(function(c){return '<tr><td style="font-family:\'DM Mono\',monospace;font-size:12px">'+c.f+'</td><td><span class="badge bb">'+c.ti+'</span></td><td><span class="stag">'+c.ref+'</span></td><td>'+c.pr+'</td><td>'+c.q+'</td><td style="font-family:\'DM Mono\',monospace">'+fmt(c.pu)+'</td><td style="font-family:\'DM Mono\',monospace;font-weight:600;color:var(--accent)">'+fmt(c.tot)+'</td><td style="font-size:12px;color:var(--muted)">'+(c.n||'-')+'</td></tr>';}).join('');
+    : data.map(function(c){return '<tr><td data-label="Fecha" style="font-family:\'DM Mono\',monospace;font-size:12px">'+c.f+'</td><td data-label="Tipo"><span class="badge bb">'+c.ti+'</span></td><td data-label="Referencia"><span class="stag">'+c.ref+'</span></td><td data-label="Proveedor">'+c.pr+'</td><td data-label="Cant.">'+c.q+'</td><td data-label="P.Unit." style="font-family:\'DM Mono\',monospace">'+fmt(c.pu)+'</td><td data-label="Total" style="font-family:\'DM Mono\',monospace;font-weight:600;color:var(--accent)">'+fmt(c.tot)+'</td><td data-label="Notas" style="font-size:12px;color:var(--muted)">'+(c.n||'-')+'</td></tr>';}).join('');
 }
 
 function saveCompra() {
@@ -766,7 +864,7 @@ function rVentas() {
   var data=DB.ven.slice().sort(function(a,b){return (b.f||'').localeCompare(a.f||'');}).filter(function(v){return !f||(v.cl+v.ref).toLowerCase().includes(f);});
   document.getElementById('tb-v').innerHTML = !data.length
     ? '<tr><td colspan="8"><div class="empty"><div class="ei">📤</div><h3>Sin ventas</h3></div></td></tr>'
-    : data.map(function(v){return '<tr><td style="font-family:\'DM Mono\',monospace;font-size:12px">'+v.f+'</td><td><span class="badge bg">'+v.ti+'</span></td><td><span class="stag">'+v.ref+'</span></td><td>'+v.cl+'</td><td>'+v.q+'</td><td style="font-family:\'DM Mono\',monospace">'+fmt(v.pu)+'</td><td style="font-family:\'DM Mono\',monospace;font-weight:600;color:var(--green)">'+fmt(v.tot)+'</td><td style="font-size:12px;color:var(--muted)">'+(v.n||'-')+'</td></tr>';}).join('');
+    : data.map(function(v){return '<tr><td data-label="Fecha" style="font-family:\'DM Mono\',monospace;font-size:12px">'+v.f+'</td><td data-label="Tipo"><span class="badge bg">'+v.ti+'</span></td><td data-label="Referencia"><span class="stag">'+v.ref+'</span></td><td data-label="Cliente">'+v.cl+'</td><td data-label="Cant.">'+v.q+'</td><td data-label="P.Unit." style="font-family:\'DM Mono\',monospace">'+fmt(v.pu)+'</td><td data-label="Total" style="font-family:\'DM Mono\',monospace;font-weight:600;color:var(--green)">'+fmt(v.tot)+'</td><td data-label="Notas" style="font-size:12px;color:var(--muted)">'+(v.n||'-')+'</td></tr>';}).join('');
 }
 
 function saveVenta() {
